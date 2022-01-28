@@ -1,7 +1,7 @@
 {
-  "name": "starter--near-sdk-as",
+  "name": "guess-it",
   "version": "0.0.1",
-  "description": "Start with a basic project",
+  "description": "Guess the weight of the animal",
   "scripts": {
     "dev": "watch -d -n 1 'clear && yarn test'",
     "test": "yarn asp -f unit.spec",
