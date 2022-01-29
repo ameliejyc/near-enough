@@ -36,13 +36,14 @@ export function deleteCurrentGame(): void {
  * NOTE: This is a change method. Which means it will modify the state.
  */
 export function makeGuess(value: number, timestamp: u64): void {
-  // pass in u64 Date value and then call new Date(value).now() https://www.assemblyscript.org/stdlib/date.html
-  // const timeNow = new Date(timestamp);
+  assert(games.length > 0, "There are no games available");
+  const timeNow = <u64>new Date(timestamp).getTime();
   const currentGame = games[games.length - 1];
-  // assert(timeNow <= currentGame.endTime, "Sorry you're too late"); // uncomment when endTime is fixed
+  assert(timeNow <= currentGame.endTime, "Sorry you're too late");
+
   // Guard against too much money being deposited to this account in beta
-  const deposit = Context.attachedDeposit;
-  assertFinancialSafety(deposit);
+  // const deposit = Context.attachedDeposit;
+  // assertFinancialSafety(deposit);
   // Add to separate contribution tracker?
 
   // Create a new guess and populate guess value
@@ -73,7 +74,16 @@ export function getGamesHistory(): Game[] {
 export function endGame(): void {
   assertOwner();
   setWinner();
+  deleteGuesses();
 }
+
+/***********************************************
+ * Internal methods
+ ************************************************/
+
+/**
+ * Internal method to calculate and set the winner on to the current Game.
+ */
 
 function sendWinnerWinnings(): void {
   assertOwner();
@@ -110,16 +120,9 @@ function assertFinancialSafety(deposit: u128): void {
   //   );
 }
 
-/***********************************************
- * Internal methods
- ************************************************/
-
-/**
- * Internal method to calculate and set the winner on to the current Game.
- */
 function setWinner(): void {
   const numberOfGuesses: number = guesses.length;
-  // if there were no guesses, return early
+  // If there were no guesses, return early
   if (numberOfGuesses < 1) return;
   let guessTotal: number = 0;
   for (let a = 0; a < numberOfGuesses; a++) {
@@ -142,4 +145,13 @@ function assertOwner(): void {
     owner == caller,
     "Only the owner of this contract may call this method"
   );
+}
+
+function deleteGuesses(): void {
+  assertOwner();
+  // If there were no guesses, return early
+  if (guesses.length < 1) return;
+  while (guesses.length > 0) {
+    guesses.pop();
+  }
 }

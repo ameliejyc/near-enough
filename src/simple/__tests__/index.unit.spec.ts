@@ -1,6 +1,6 @@
 import { VMContext } from "near-sdk-as";
 import * as contract from "../assembly";
-import { games } from "../assembly/model";
+import { games, guesses } from "../assembly/model";
 
 const setCallerAsOwner = (): void => {
   // default predecessor is carol
@@ -11,6 +11,7 @@ const setCallerAsOwner = (): void => {
 
 const animalIndex = 0;
 const timestamp = 1643472431557; // 2022-01-29T16:07:11.557Z
+const guessTimestamp = 1643473865460; // 2022-01-29T16:31:05.460Z
 
 // VIEW method tests
 describe("getGamesHistory method", () => {
@@ -55,5 +56,14 @@ describe("deleteCurrentGame method", () => {
     expect(() => {
       contract.deleteCurrentGame();
     }).toThrow();
+  });
+});
+
+describe("makeGuess method", () => {
+  it("pushes new guess to guesses array", () => {
+    setCallerAsOwner();
+    contract.startGame(animalIndex, timestamp);
+    contract.makeGuess(8, guessTimestamp);
+    expect(guesses.length).toStrictEqual(1);
   });
 });
