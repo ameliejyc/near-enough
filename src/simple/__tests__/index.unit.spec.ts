@@ -9,11 +9,14 @@ const setCallerAsOwner = (): void => {
   VMContext.setSigner_account_id("alice");
 };
 
+const animalIndex = 0;
+const timestamp = 1643472431557; // 2022-01-29T16:07:11.557Z
+
 // VIEW method tests
 describe("getGamesHistory method", () => {
   it("returns array of games when caller is owner", () => {
     setCallerAsOwner();
-    contract.startGame();
+    contract.startGame(animalIndex, timestamp);
     const gamesHistory = contract.getGamesHistory();
     expect(gamesHistory.length).toStrictEqual(1);
   });
@@ -28,13 +31,14 @@ describe("getGamesHistory method", () => {
 describe("startGame method", () => {
   it("pushes new game to games array when caller is owner", () => {
     setCallerAsOwner();
-    contract.startGame();
+    contract.startGame(animalIndex, timestamp);
     expect(games.length).toStrictEqual(1);
+    expect(games[0].endTime).toStrictEqual(1643558831557 as u64);
   });
 
   it("throws an error when caller is not owner", () => {
     expect(() => {
-      contract.startGame();
+      contract.startGame(animalIndex, timestamp);
     }).toThrow();
   });
 });
@@ -42,7 +46,7 @@ describe("startGame method", () => {
 describe("deleteCurrentGame method", () => {
   it("pops last game from games array when caller is owner", () => {
     setCallerAsOwner();
-    contract.startGame();
+    contract.startGame(animalIndex, timestamp);
     contract.deleteCurrentGame();
     expect(games.length).toStrictEqual(0);
   });

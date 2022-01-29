@@ -7,16 +7,18 @@ const GAMES_LIMIT = 10;
 const CONTRIBUTION_SAFETY_LIMIT: u128 = u128.mul(ONE_NEAR, u128.from(5));
 
 /**
- * Starts a new game.
+ * Starts a new game. Currently this method has to be invoked manually but could be automated in future.
  * NOTE: This is a change method. It will modify state.
  */
-export function startGame(): void {
+export function startGame(animalIndex: i32, timestamp: u64): void {
   assertOwner();
   // Create a new game and populate fields with our data
-  const game = new Game();
+  const game = new Game(animalIndex, timestamp);
   // Add the game to end of the persistent collection
   games.push(game);
-  // Log some details about the game
+  logging.log(
+    `New game started: Animal is ${game.animal}, ending at ${game.endTime}`
+  );
 }
 
 /**
@@ -33,9 +35,9 @@ export function deleteCurrentGame(): void {
  * Adds a guess to the current game's guesses.
  * NOTE: This is a change method. Which means it will modify the state.
  */
-export function makeGuess(value: number, date: i64): void {
-  // pass in i64 Date value and then call new Date(value).now() https://www.assemblyscript.org/stdlib/date.html
-  // const timeNow = new Date(date);
+export function makeGuess(value: number, timestamp: u64): void {
+  // pass in u64 Date value and then call new Date(value).now() https://www.assemblyscript.org/stdlib/date.html
+  // const timeNow = new Date(timestamp);
   const currentGame = games[games.length - 1];
   // assert(timeNow <= currentGame.endTime, "Sorry you're too late"); // uncomment when endTime is fixed
   // Guard against too much money being deposited to this account in beta
@@ -64,13 +66,13 @@ export function getGamesHistory(): Game[] {
 }
 
 /**
- * Calculates the game winner.
+ * Ends the current game and calculates the winner.
+ * Currently this method has to be invoked manually but could be automated in future.
  * NOTE: This is a change method. Which means it will modify the state.
  */
 export function endGame(): void {
   assertOwner();
   setWinner();
-  startGame();
 }
 
 function sendWinnerWinnings(): void {
