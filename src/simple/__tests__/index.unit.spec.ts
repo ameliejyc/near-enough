@@ -1,19 +1,55 @@
+import { VMContext } from "near-sdk-as";
 import * as contract from "../assembly";
+import { games } from "../assembly/model";
 
-describe("Contract", () => {
-  // VIEW method tests
+const setCallerAsOwner = (): void => {
+  // default predecessor is carol
+  // default contract name is alice
+  VMContext.setPredecessor_account_id("alice");
+  VMContext.setSigner_account_id("alice");
+};
 
-  it("says hello", () => {
-    expect(contract.helloWorld()).toStrictEqual("hello world")
-  })
+// VIEW method tests
+describe("getGamesHistory method", () => {
+  it("returns array of games when caller is owner", () => {
+    setCallerAsOwner();
+    contract.startGame();
+    const gamesHistory = contract.getGamesHistory();
+    expect(gamesHistory.length).toStrictEqual(1);
+  });
 
-  it("reads data", () => {
-    expect(contract.read("some key")).toStrictEqual("🚫 Key [ some key ] not found in storage. ( storage [ 0 bytes ] )")
-  })
+  it("returns array of games when caller is not owner", () => {
+    const gamesHistory = contract.getGamesHistory();
+    expect(gamesHistory.length).toStrictEqual(0);
+  });
+});
 
-  // CHANGE method tests
+// CHANGE method tests
+describe("startGame method", () => {
+  it("pushes new game to games array when caller is owner", () => {
+    setCallerAsOwner();
+    contract.startGame();
+    expect(games.length).toStrictEqual(1);
+  });
 
-  it("saves data to contract storage", () => {
-    expect(contract.write("some-key", "some value")).toStrictEqual("✅ Data saved. ( storage [ 18 bytes ] )")
-  })
-})
+  it("throws an error when caller is not owner", () => {
+    expect(() => {
+      contract.startGame();
+    }).toThrow();
+  });
+});
+
+describe("deleteCurrentGame method", () => {
+  it("pops last game from games array when caller is owner", () => {
+    setCallerAsOwner();
+    contract.startGame();
+    contract.deleteCurrentGame();
+    expect(games.length).toStrictEqual(0);
+  });
+
+  it("throws an error when caller is not owner", () => {
+    expect(() => {
+      contract.deleteCurrentGame();
+    }).toThrow();
+  });
+});

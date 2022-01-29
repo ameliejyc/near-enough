@@ -1,4 +1,4 @@
-import { Context, u128 } from "near-sdk-as";
+import { Context, logging, u128 } from "near-sdk-as";
 import { Game, games, Guess, guesses } from "./model";
 import { ONE_NEAR } from "../../utils";
 
@@ -11,16 +11,12 @@ const CONTRIBUTION_SAFETY_LIMIT: u128 = u128.mul(ONE_NEAR, u128.from(5));
  * NOTE: This is a change method. It will modify state.
  */
 export function startGame(): void {
-  const caller = Context.predecessor;
-  const owner = Context.contractName;
-  assert(
-    owner == caller,
-    "Only the owner of this contract may call this method"
-  );
-  // Creating a new game and populating fields with our data
+  assertOwner();
+  // Create a new game and populate fields with our data
   const game = new Game();
-  // Adding the game to end of the persistent collection
+  // Add the game to end of the persistent collection
   games.push(game);
+  // Log some details about the game
 }
 
 /**
@@ -29,6 +25,7 @@ export function startGame(): void {
  */
 export function deleteCurrentGame(): void {
   assertOwner();
+  // Remove the last game from the persistent collection
   games.pop();
 }
 
@@ -36,10 +33,11 @@ export function deleteCurrentGame(): void {
  * Adds a guess to the current game's guesses.
  * NOTE: This is a change method. Which means it will modify the state.
  */
-export function makeGuess(value: number): void {
-  const timeNow = <u64>Date.now();
+export function makeGuess(value: number, date: i64): void {
+  // pass in i64 Date value and then call new Date(value).now() https://www.assemblyscript.org/stdlib/date.html
+  // const timeNow = new Date(date);
   const currentGame = games[games.length - 1];
-  assert(timeNow <= currentGame.endTime, "Sorry you're too late");
+  // assert(timeNow <= currentGame.endTime, "Sorry you're too late"); // uncomment when endTime is fixed
   // Guard against too much money being deposited to this account in beta
   const deposit = Context.attachedDeposit;
   assertFinancialSafety(deposit);
@@ -72,7 +70,6 @@ export function getGamesHistory(): Game[] {
 export function endGame(): void {
   assertOwner();
   setWinner();
-  sendWinnerWinnings();
   startGame();
 }
 
@@ -120,6 +117,8 @@ function assertFinancialSafety(deposit: u128): void {
  */
 function setWinner(): void {
   const numberOfGuesses: number = guesses.length;
+  // if there were no guesses, return early
+  if (numberOfGuesses < 1) return;
   let guessTotal: number = 0;
   for (let a = 0; a < numberOfGuesses; a++) {
     guessTotal += guesses[a].guess;
@@ -131,6 +130,7 @@ function setWinner(): void {
   const currentGame = games[currentGameIndex];
   currentGame.setWinner(winner);
   games.replace(currentGameIndex, currentGame);
+  sendWinnerWinnings();
 }
 
 function assertOwner(): void {
