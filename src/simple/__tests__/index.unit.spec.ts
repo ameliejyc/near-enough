@@ -1,4 +1,4 @@
-import { VMContext } from "near-sdk-as";
+import { VMContext, u128, Context } from "near-sdk-as";
 import * as contract from "../assembly";
 import { games, guesses } from "../assembly/model";
 
@@ -60,10 +60,64 @@ describe("deleteCurrentGame method", () => {
 });
 
 describe("makeGuess method", () => {
+  beforeEach(() => {
+    setCallerAsOwner();
+    contract.startGame(animalIndex, timestamp);
+  });
+
   it("pushes new guess to guesses array", () => {
+    contract.makeGuess(8, guessTimestamp);
+    expect(guesses.length).toStrictEqual(1);
+  });
+
+  // it("updates the current game winnings", () => {
+  //   contract.makeGuess(8, guessTimestamp);
+  //   expect(games[0].winnings.total).toBeGreaterThan(u128.from(0));
+  // });
+
+  it("throws an error when games array is empty", () => {
+    contract.deleteCurrentGame();
+    expect(() => {
+      contract.makeGuess(8, guessTimestamp);
+    }).toThrow();
+  });
+
+  it("throws an error when the game has already finished", () => {
+    expect(() => {
+      contract.makeGuess(8, guessTimestamp + 100000000);
+    }).toThrow();
+  });
+
+  // it("throws an error when the deposit is too low", () => {
+  //   VMContext.setAttached_deposit(u128.from(0.05));
+  //   log(Context.attachedDeposit);
+  //   expect(() => {
+  //     contract.makeGuess(8, guessTimestamp);
+  //   }).toThrow();
+  // });
+
+  // it("throws an error when the deposit is too high", () => {
+  //   VMContext.setAttached_deposit(u128.from(10));
+  //   log(Context.attachedDeposit);
+  //   expect(() => {
+  //     contract.makeGuess(8, guessTimestamp);
+  //   }).toThrow();
+  // });
+});
+
+describe("deleteGuesses method", () => {
+  test("empties the guesses array when caller is owner", () => {
     setCallerAsOwner();
     contract.startGame(animalIndex, timestamp);
     contract.makeGuess(8, guessTimestamp);
     expect(guesses.length).toStrictEqual(1);
+    contract.deleteGuesses();
+    expect(guesses.length).toStrictEqual(0);
+  });
+
+  it("throws an error when caller is not owner", () => {
+    expect(() => {
+      contract.deleteCurrentGame();
+    }).toThrow();
   });
 });

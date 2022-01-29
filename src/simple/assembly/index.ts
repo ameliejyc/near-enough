@@ -1,10 +1,11 @@
-import { Context, logging, u128 } from "near-sdk-as";
+import { Context, logging, u128, ContractPromiseBatch } from "near-sdk-as";
 import { Game, games, Guess, guesses } from "./model";
-import { ONE_NEAR } from "../../utils";
+import { ONE_NEAR, assert_single_promise_success, XCC_GAS } from "../../utils";
 
 const GAMES_LIMIT = 10;
-// max 5 NEAR accepted to this contract before it forces a transfer to the owner
-const CONTRIBUTION_SAFETY_LIMIT: u128 = u128.mul(ONE_NEAR, u128.from(5));
+// max 5 NEAR accepted to this contract
+export const MAXIMUM_PAY_TO_PLAY: u128 = u128.mul(ONE_NEAR, u128.from(5));
+export const MINIMUM_PAY_TO_PLAY: u128 = u128.mul(ONE_NEAR, u128.from(0.1));
 
 /**
  * Starts a new game. Currently this method has to be invoked manually but could be automated in future.
@@ -37,15 +38,23 @@ export function deleteCurrentGame(): void {
  */
 export function makeGuess(value: number, timestamp: u64): void {
   assert(games.length > 0, "There are no games available");
+  const deposit = Context.attachedDeposit;
+  assert(
+    u128.ge(deposit, MINIMUM_PAY_TO_PLAY),
+    "Please contribute at least 0.1 NEAR to play!"
+  );
   const timeNow = <u64>new Date(timestamp).getTime();
   const currentGame = games[games.length - 1];
-  assert(timeNow <= currentGame.endTime, "Sorry you're too late");
+  assert(
+    timeNow <= currentGame.endTime,
+    "Sorry you're too late to guess in this game"
+  );
 
   // Guard against too much money being deposited to this account in beta
-  // const deposit = Context.attachedDeposit;
-  // assertFinancialSafety(deposit);
-  // Add to separate contribution tracker?
-
+  assertFinancialSafety(deposit);
+  if (deposit > u128.Zero) {
+    currentGame.winnings.update(deposit);
+  }
   // Create a new guess and populate guess value
   const guess = new Guess(value);
   // Add the guess to end of the persistent collection
@@ -67,7 +76,7 @@ export function getGamesHistory(): Game[] {
 }
 
 /**
- * Ends the current game and calculates the winner.
+ * Ends the current game and calculates the winner. Then deletes guesses.
  * Currently this method has to be invoked manually but could be automated in future.
  * NOTE: This is a change method. Which means it will modify the state.
  */
@@ -77,50 +86,27 @@ export function endGame(): void {
   deleteGuesses();
 }
 
+/**
+ * Deletes guesses from persistent storage.
+ */
+export function deleteGuesses(): void {
+  assertOwner();
+  // If there were no guesses, return early
+  if (guesses.length < 1) return;
+  while (guesses.length > 0) {
+    guesses.pop();
+  }
+}
+
 /***********************************************
  * Internal methods
  ************************************************/
 
 /**
- * Internal method to calculate and set the winner on to the current Game.
+ * Calculates winner and updates the game. Calls function to transfer winnings.
  */
-
-function sendWinnerWinnings(): void {
-  assertOwner();
-  // Assert funds are above zero
-
-  // const to_self = Context.contractName;
-  // const to_owner = ContractPromiseBatch.create(this.owner);
-
-  // // transfer earnings to owner then confirm transfer complete
-  // const promise = to_owner.transfer(this.contributions.received);
-  // promise
-  //   .then(to_self)
-  //   .function_call("onTransferComplete", "{}", u128.Zero, XCC_GAS);
-}
-
-// function onTransferComplete(): void {
-//   assertOwner();
-//   assert_single_promise_success();
-
-//   logging.log("transfer complete");
-//   // reset contribution tracker
-//   this.contributions.record_transfer();
-// }
-
-function assertFinancialSafety(deposit: u128): void {
-  //   const new_total = u128.add(deposit, this.contributions.received);
-  //   assert(
-  //     u128.le(deposit, CONTRIBUTION_SAFETY_LIMIT),
-  //     "You are trying to attach too many NEAR Tokens to this call.  There is a safe limit while in beta of 5 NEAR"
-  //   );
-  //   assert(
-  //     u128.le(new_total, CONTRIBUTION_SAFETY_LIMIT),
-  //     "Maximum contributions reached.  Please call transfer() to continue receiving funds."
-  //   );
-}
-
 function setWinner(): void {
+  assertOwner();
   const numberOfGuesses: number = guesses.length;
   // If there were no guesses, return early
   if (numberOfGuesses < 1) return;
@@ -131,13 +117,52 @@ function setWinner(): void {
   const guessAverage = guessTotal / numberOfGuesses;
   // TODO: figure out closest guess
   const winner = guesses[0]; // just set the first guess for now
-  const currentGameIndex = games.length - 1;
-  const currentGame = games[currentGameIndex];
-  currentGame.setWinner(winner);
-  games.replace(currentGameIndex, currentGame);
+  getCurrentGame().setWinner(winner);
   sendWinnerWinnings();
 }
 
+/**
+ * Transfers winnings to the winner and updates the game.
+ */
+function sendWinnerWinnings(): void {
+  assertOwner();
+  const currentGame = getCurrentGame();
+  const currentGameIndex = games.length - 1;
+  assert(
+    currentGame.winnings.total > u128.Zero,
+    "No winnings to be transferred"
+  );
+
+  // Transfer earnings to owner then confirm transfer complete
+  const toWinner = ContractPromiseBatch.create(currentGame.winnerAccount);
+  const promise = toWinner.transfer(currentGame.winnings.total);
+  promise
+    .then(Context.contractName)
+    .function_call("onTransferComplete", "{}", u128.Zero, XCC_GAS);
+
+  // Replace the current game with the updated game
+  games.replace(currentGameIndex, currentGame);
+}
+
+function onTransferComplete(): void {
+  assertOwner();
+  assert_single_promise_success();
+  logging.log("Transfer to winner is complete");
+
+  // Reset winnings tracker
+  getCurrentGame().winnings.recordTransfer();
+}
+
+function assertFinancialSafety(deposit: u128): void {
+  assert(
+    u128.le(deposit, MAXIMUM_PAY_TO_PLAY),
+    "You are trying to attach too many NEAR Tokens to this call. There is a safe limit while in beta of 5 NEAR"
+  );
+}
+
+/**
+ * Asserts transaction caller is the contract owner.
+ */
 function assertOwner(): void {
   const caller = Context.predecessor;
   const owner = Context.contractName;
@@ -147,11 +172,10 @@ function assertOwner(): void {
   );
 }
 
-function deleteGuesses(): void {
-  assertOwner();
-  // If there were no guesses, return early
-  if (guesses.length < 1) return;
-  while (guesses.length > 0) {
-    guesses.pop();
-  }
+/**
+ * Returns the latest game.
+ */
+function getCurrentGame(): Game {
+  const currentGameIndex = games.length - 1;
+  return games[currentGameIndex];
 }
