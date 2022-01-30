@@ -1,6 +1,11 @@
 import { VMContext, u128, Context } from "near-sdk-as";
+import { ONE_NEAR } from "../../utils";
 import * as contract from "../assembly";
 import { games, guesses } from "../assembly/model";
+
+const animalIndex = 0;
+const timestamp = 1643472431557; // 2022-01-29T16:07:11.557Z
+const guessTimestamp = 1643473865460; // 2022-01-29T16:31:05.460Z
 
 const setCallerAsOwner = (): void => {
   // default predecessor is carol
@@ -8,10 +13,6 @@ const setCallerAsOwner = (): void => {
   VMContext.setPredecessor_account_id("alice");
   VMContext.setSigner_account_id("alice");
 };
-
-const animalIndex = 0;
-const timestamp = 1643472431557; // 2022-01-29T16:07:11.557Z
-const guessTimestamp = 1643473865460; // 2022-01-29T16:31:05.460Z
 
 // VIEW method tests
 describe("getGamesHistory method", () => {
@@ -62,6 +63,7 @@ describe("deleteCurrentGame method", () => {
 describe("makeGuess method", () => {
   beforeEach(() => {
     setCallerAsOwner();
+    VMContext.setAttached_deposit(u128.div10(ONE_NEAR));
     contract.startGame(animalIndex, timestamp);
   });
 
@@ -70,10 +72,10 @@ describe("makeGuess method", () => {
     expect(guesses.length).toStrictEqual(1);
   });
 
-  // it("updates the current game winnings", () => {
-  //   contract.makeGuess(8, guessTimestamp);
-  //   expect(games[0].winnings.total).toBeGreaterThan(u128.from(0));
-  // });
+  it("updates the current game winnings", () => {
+    contract.makeGuess(8, guessTimestamp);
+    expect(games[0].winnings.total).toBeGreaterThan(u128.Zero);
+  });
 
   it("throws an error when games array is empty", () => {
     contract.deleteCurrentGame();
@@ -88,24 +90,25 @@ describe("makeGuess method", () => {
     }).toThrow();
   });
 
-  // it("throws an error when the deposit is too low", () => {
-  //   VMContext.setAttached_deposit(u128.from(0.05));
-  //   log(Context.attachedDeposit);
-  //   expect(() => {
-  //     contract.makeGuess(8, guessTimestamp);
-  //   }).toThrow();
-  // });
+  it("throws an error when the deposit is too low", () => {
+    VMContext.setAttached_deposit(u128.div(ONE_NEAR, u128.from(100)));
+    expect(() => {
+      contract.makeGuess(8, guessTimestamp);
+    }).toThrow();
+  });
 
-  // it("throws an error when the deposit is too high", () => {
-  //   VMContext.setAttached_deposit(u128.from(10));
-  //   log(Context.attachedDeposit);
-  //   expect(() => {
-  //     contract.makeGuess(8, guessTimestamp);
-  //   }).toThrow();
-  // });
+  it("throws an error when the deposit is too high", () => {
+    VMContext.setAttached_deposit(u128.mul(ONE_NEAR, u128.from(6)));
+    expect(() => {
+      contract.makeGuess(8, guessTimestamp);
+    }).toThrow();
+  });
 });
 
 describe("deleteGuesses method", () => {
+  beforeEach(() => {
+    VMContext.setAttached_deposit(u128.div10(ONE_NEAR));
+  });
   test("empties the guesses array when caller is owner", () => {
     setCallerAsOwner();
     contract.startGame(animalIndex, timestamp);

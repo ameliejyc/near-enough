@@ -5,7 +5,7 @@ import { ONE_NEAR, assert_single_promise_success, XCC_GAS } from "../../utils";
 const GAMES_LIMIT = 10;
 // max 5 NEAR accepted to this contract
 export const MAXIMUM_PAY_TO_PLAY: u128 = u128.mul(ONE_NEAR, u128.from(5));
-export const MINIMUM_PAY_TO_PLAY: u128 = u128.mul(ONE_NEAR, u128.from(0.1));
+export const PAY_TO_PLAY: u128 = u128.div10(ONE_NEAR);
 
 /**
  * Starts a new game. Currently this method has to be invoked manually but could be automated in future.
@@ -13,6 +13,14 @@ export const MINIMUM_PAY_TO_PLAY: u128 = u128.mul(ONE_NEAR, u128.from(0.1));
  */
 export function startGame(animalIndex: i32, timestamp: u64): void {
   assertOwner();
+  if (games.length > 0) {
+    const timeNow = <u64>new Date(timestamp).getTime();
+    const previousGame = games[games.length - 1];
+    assert(
+      timeNow > previousGame.endTime,
+      "There's already a game in progress"
+    );
+  }
   // Create a new game and populate fields with our data
   const game = new Game(animalIndex, timestamp);
   // Add the game to end of the persistent collection
@@ -36,13 +44,18 @@ export function deleteCurrentGame(): void {
  * Adds a guess to the current game's guesses.
  * NOTE: This is a change method. Which means it will modify the state.
  */
-export function makeGuess(value: number, timestamp: u64): void {
+export function makeGuess(value: f32, timestamp: u64): void {
+  // Check there is a game available
   assert(games.length > 0, "There are no games available");
+
+  // Check the attached deposit is at least the minimum
   const deposit = Context.attachedDeposit;
   assert(
-    u128.ge(deposit, MINIMUM_PAY_TO_PLAY),
+    u128.ge(deposit, PAY_TO_PLAY),
     "Please contribute at least 0.1 NEAR to play!"
   );
+
+  // Check the time of play is within the game time
   const timeNow = <u64>new Date(timestamp).getTime();
   const currentGame = games[games.length - 1];
   assert(
@@ -50,15 +63,22 @@ export function makeGuess(value: number, timestamp: u64): void {
     "Sorry you're too late to guess in this game"
   );
 
+  // Check the guess value is within bounds
+  assert(0 < value, "Guess value is not within range");
+  assert(value < 1000000, "Guess value is not within range");
+
   // Guard against too much money being deposited to this account in beta
   assertFinancialSafety(deposit);
   if (deposit > u128.Zero) {
     currentGame.winnings.update(deposit);
   }
+
   // Create a new guess and populate guess value
   const guess = new Guess(value);
-  // Add the guess to end of the persistent collection
+  // Add the guess to end of the guesses persistent collection
   guesses.push(guess);
+  // Update the current Game in the games persistent collection
+  games.replace(games.length - 1, currentGame);
 }
 
 /**
@@ -73,6 +93,29 @@ export function getGamesHistory(): Game[] {
     result[i] = games[i + startIndex];
   }
   return result;
+}
+
+/**
+ * Gets the current game guesses.
+ * NOTE: This is a view method. It will not modify state.
+ */
+export function getGuesses(): Guess[] {
+  assertOwner();
+  if (guesses.length < 1) return [];
+  const numGuesses = guesses.length - 1;
+  const result = new Array<Guess>(numGuesses);
+  for (let i = 0; i < numGuesses; i++) {
+    result[i] = guesses[i];
+  }
+  return result;
+}
+
+/**
+ * Gets the current game winnings.
+ * NOTE: This is a view method. It will not modify state.
+ */
+export function getWinnings(): u128 {
+  return getCurrentGame().winnings.total;
 }
 
 /**
