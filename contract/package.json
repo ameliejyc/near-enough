@@ -1,0 +1,20 @@
+{
+  "name": "near-enough",
+  "version": "0.0.1",
+  "description": "A wisdom of the crowd guessing game",
+  "scripts": {
+    "dev": "watch -d -n 1 'clear && yarn test'",
+    "test": "asp -f unit.spec",
+    "clean": "rm -rf ./build && rm -rf ./neardev",
+    "build:debug": "asb --target debug",
+    "build": "asb",
+    "asp": "asp --verbose --nologo",
+    "deploy": "yarn build:release && near deploy 'nearenough.testnet' ./build/release/nearenough.wasm"
+  },
+  "keywords": [],
+  "author": "ameliejyc",
+  "license": "ISC",
+  "devDependencies": {
+    "near-sdk-as": "^3.1.0"
+  }
+}

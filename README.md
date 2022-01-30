@@ -1,170 +1,83 @@
-# `near-sdk-as` Starter Kit
+# Near enough
 
-This is a good project to use as a starting point for your AssemblyScript project.
+This [React] app was initialized with [create-near-app]
 
-## Samples
+# Quick Start
 
-This repository includes a complete project structure for AssemblyScript contracts targeting the NEAR platform.
+To run this project locally:
 
-The example here is very basic.  It's a simple contract demonstrating the following concepts:
-- a single contract
-- the difference between `view` vs. `change` methods
-- basic contract storage
+1. Prerequisites: Make sure you've installed [Node.js] ≥ 12
+2. Install dependencies: `yarn install` and `cd ./contract yarn install`
+3. Run the local development server: `yarn dev` (see `package.json` for a
+   full list of `scripts` you can run with `yarn`)
 
-There are 2 AssemblyScript contracts in this project, each in their own folder:
+Now you'll have a local development environment backed by the NEAR TestNet!
 
-- **simple** in the `src/simple` folder
-- **singleton** in the `src/singleton` folder
+Go ahead and play with the app and the code. As you make code changes, the app will automatically reload.
 
-### Simple
+# Exploring The Code
 
-We say that an AssemblyScript contract is written in the "simple style" when the `index.ts` file (the contract entry point) includes a series of exported functions.
+1. The "backend" code lives in the `/contract` folder. See the README there for
+   more info.
+2. The frontend code lives in the `/src` folder. `/src/index.html` is a great
+   place to start exploring. Note that it loads in `/src/index.js`, where you
+   can learn how the frontend connects to the NEAR blockchain.
+3. Tests: there are different kinds of tests for the frontend and the smart
+   contract. See `contract/README` for info about how it's tested. The frontend
+   code gets tested with [jest]. You can run both of these at once with `yarn run test`.
 
-In this case, all exported functions become public contract methods.
+# Deploy
 
-```ts
-// return the string 'hello world'
-export function helloWorld(): string {}
+Every smart contract in NEAR has its [own associated account][near accounts]. When you run `yarn dev`, your smart contract gets deployed to the live NEAR TestNet with a throwaway account. When you're ready to make it permanent, here's how.
 
-// read the given key from account (contract) storage
-export function read(key: string): string {}
+## Step 0: Install near-cli (optional)
 
-// write the given value at the given key to account (contract) storage
-export function write(key: string, value: string): string {}
+[near-cli] is a command line interface (CLI) for interacting with the NEAR blockchain. It was installed to the local `node_modules` folder when you ran `yarn install`, but for best ergonomics you may want to install it globally:
 
-// private helper method used by read() and write() above
-private storageReport(): string {}
-```
+    yarn install --global near-cli
 
-### Singleton
+Or, if you'd rather use the locally-installed version, you can prefix all `near` commands with `npx`
 
-We say that an AssemblyScript contract is written in the "singleton style" when the `index.ts` file (the contract entry point) has a single exported class (the name of the class doesn't matter) that is decorated with `@nearBindgen`.
+Ensure that it's installed with `near --version` (or `npx near --version`)
 
-In this case, all methods on the class become public contract methods unless marked `private`.  Also, all instance variables are stored as a serialized instance of the class under a special storage key named `STATE`.  AssemblyScript uses JSON for storage serialization (as opposed to Rust contracts which use a custom binary serialization format called borsh).
+## Step 1: Create an account for the contract
 
-```ts
-@nearBindgen
-export class Contract {
+Each account on NEAR can have at most one contract deployed to it. If you've already created an account such as `your-name.testnet`, you can deploy your contract to `nearenough.your-name.testnet`. Assuming you've already created an account on [NEAR Wallet], here's how to create `nearenough.your-name.testnet`:
 
-  // return the string 'hello world'
-  helloWorld(): string {}
+1. Authorize NEAR CLI, following the commands it gives you:
 
-  // read the given key from account (contract) storage
-  read(key: string): string {}
+   near login
 
-  // write the given value at the given key to account (contract) storage
-  @mutateState()
-  write(key: string, value: string): string {}
+2. Create a subaccount (replace `YOUR-NAME` below with your actual account name):
 
-  // private helper method used by read() and write() above
-  private storageReport(): string {}
-}
-```
+   near create-account nearenough.YOUR-NAME.testnet --masterAccount YOUR-NAME.testnet
 
+## Step 2: set contract name in code
 
-## Usage
+Modify the line in `src/config.js` that sets the account name of the contract. Set it to the account id you used above.
 
-### Getting started
+    const CONTRACT_NAME = process.env.CONTRACT_NAME || 'nearenough.YOUR-NAME.testnet'
 
-(see below for video recordings of each of the following steps)
+## Step 3: deploy!
 
-INSTALL `NEAR CLI` first like this: `npm i -g near-cli`
+One command:
 
-1. clone this repo to a local folder
-2. run `yarn`
-3. run `./scripts/1.dev-deploy.sh`
-3. run `./scripts/2.use-contract.sh`
-4. run `./scripts/2.use-contract.sh` (yes, run it to see changes)
-5. run `./scripts/3.cleanup.sh`
+    yarn deploy
 
-### Videos
+As you can see in `package.json`, this does two things:
 
-**`1.dev-deploy.sh`**
+1. builds & deploys smart contract to NEAR TestNet
+2. builds & deploys frontend code to GitHub using [gh-pages]. This will only work if the project already has a repository set up on GitHub. Feel free to modify the `deploy` script in `package.json` to deploy elsewhere.
 
-This video shows the build and deployment of the contract.
+# Troubleshooting
 
-[![asciicast](https://asciinema.org/a/409575.svg)](https://asciinema.org/a/409575)
+On Windows, if you're seeing an error containing `EPERM` it may be related to spaces in your path. Please see [this issue](https://github.com/zkat/npx/issues/209) for more details.
 
-**`2.use-contract.sh`**
-
-This video shows contract methods being called.  You should run the script twice to see the effect it has on contract state.
-
-[![asciicast](https://asciinema.org/a/409577.svg)](https://asciinema.org/a/409577)
-
-**`3.cleanup.sh`**
-
-This video shows the cleanup script running.  Make sure you add the `BENEFICIARY` environment variable. The script will remind you if you forget.
-
-```sh
-export BENEFICIARY=<your-account-here>   # this account receives contract account balance
-```
-
-[![asciicast](https://asciinema.org/a/409580.svg)](https://asciinema.org/a/409580)
-
-### Other documentation
-
-- See `./scripts/README.md` for documentation about the scripts
-- Watch this video where Willem Wyndham walks us through refactoring a simple example of a NEAR smart contract written in AssemblyScript
-
-  https://youtu.be/QP7aveSqRPo
-
-  ```
-  There are 2 "styles" of implementing AssemblyScript NEAR contracts:
-  - the contract interface can either be a collection of exported functions
-  - or the contract interface can be the methods of a an exported class
-
-  We call the second style "Singleton" because there is only one instance of the class which is serialized to the blockchain storage.  Rust contracts written for NEAR do this by default with the contract struct.
-
-   0:00 noise (to cut)
-   0:10 Welcome
-   0:59 Create project starting with "npm init"
-   2:20 Customize the project for AssemblyScript development
-   9:25 Import the Counter example and get unit tests passing
-  18:30 Adapt the Counter example to a Singleton style contract
-  21:49 Refactoring unit tests to access the new methods
-  24:45 Review and summary
-  ```
-
-## The file system
-
-```sh
-├── README.md                          # this file
-├── as-pect.config.js                  # configuration for as-pect (AssemblyScript unit testing)
-├── asconfig.json                      # configuration for AssemblyScript compiler (supports multiple contracts)
-├── package.json                       # NodeJS project manifest
-├── scripts
-│   ├── 1.dev-deploy.sh                # helper: build and deploy contracts
-│   ├── 2.use-contract.sh              # helper: call methods on ContractPromise
-│   ├── 3.cleanup.sh                   # helper: delete build and deploy artifacts
-│   └── README.md                      # documentation for helper scripts
-├── src
-│   ├── as_types.d.ts                  # AssemblyScript headers for type hints
-│   ├── simple                         # Contract 1: "Simple example"
-│   │   ├── __tests__
-│   │   │   ├── as-pect.d.ts           # as-pect unit testing headers for type hints
-│   │   │   └── index.unit.spec.ts     # unit tests for contract 1
-│   │   ├── asconfig.json              # configuration for AssemblyScript compiler (one per contract)
-│   │   └── assembly
-│   │       └── index.ts               # contract code for contract 1
-│   ├── singleton                      # Contract 2: "Singleton-style example"
-│   │   ├── __tests__
-│   │   │   ├── as-pect.d.ts           # as-pect unit testing headers for type hints
-│   │   │   └── index.unit.spec.ts     # unit tests for contract 2
-│   │   ├── asconfig.json              # configuration for AssemblyScript compiler (one per contract)
-│   │   └── assembly
-│   │       └── index.ts               # contract code for contract 2
-│   ├── tsconfig.json                  # Typescript configuration
-│   └── utils.ts                       # common contract utility functions
-└── yarn.lock                          # project manifest version lock
-```
-
-You may clone this repo to get started OR create everything from scratch.
-
-Please note that, in order to create the AssemblyScript and tests folder structure, you may use the command `asp --init` which will create the following folders and files:
-
-```
-./assembly/
-./assembly/tests/
-./assembly/tests/example.spec.ts
-./assembly/tests/as-pect.d.ts
-```
+[react]: https://reactjs.org/
+[create-near-app]: https://github.com/near/create-near-app
+[node.js]: https://nodejs.org/en/download/package-manager/
+[jest]: https://jestjs.io/
+[near accounts]: https://docs.near.org/docs/concepts/account
+[near wallet]: https://wallet.testnet.near.org/
+[near-cli]: https://github.com/near/near-cli
+[gh-pages]: https://github.com/tschaub/gh-pages

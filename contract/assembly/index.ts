@@ -1,6 +1,6 @@
 import { Context, logging, u128, ContractPromiseBatch } from "near-sdk-as";
 import { Game, games, Guess, guesses } from "./model";
-import { ONE_NEAR, assert_single_promise_success, XCC_GAS } from "../../utils";
+import { ONE_NEAR, assert_single_promise_success, XCC_GAS } from "./utils";
 
 const GAMES_LIMIT = 10;
 // max 5 NEAR accepted to this contract

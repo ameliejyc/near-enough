@@ -1,7 +1,7 @@
 import { VMContext, u128, Context } from "near-sdk-as";
 import { ONE_NEAR } from "../../utils";
-import * as contract from "../assembly";
-import { games, guesses } from "../assembly/model";
+import * as contract from "..";
+import { games, guesses } from "../model";
 
 const animalIndex = 0;
 const timestamp = 1643472431557; // 2022-01-29T16:07:11.557Z

@@ -21,7 +21,7 @@ echo ---------------------------------------------------------
 echo
 
 # uncomment out the line below to deploy the other example contract
-near dev-deploy ./build/debug/simple.wasm
+near dev-deploy ./build/debug/nearenough.wasm
 
 echo
 echo
