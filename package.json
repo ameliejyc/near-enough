@@ -1,17 +1,18 @@
 {
-  "name": "guess-it",
+  "name": "near-enough",
   "version": "0.0.1",
-  "description": "Guess the weight of the animal",
+  "description": "A wisdom of the crowd guessing game",
   "scripts": {
     "dev": "watch -d -n 1 'clear && yarn test'",
     "test": "yarn asp -f unit.spec",
     "clean": "rm -rf ./build && rm -rf ./neardev",
     "build": "asb --target debug",
     "build:release": "asb",
-    "asp": "asp --verbose --nologo"
+    "asp": "asp --verbose --nologo",
+    "deploy": "yarn build:release && near deploy 'nearenough.testnet' ./build/release/simple.wasm"
   },
   "keywords": [],
-  "author": "hello@near.org",
+  "author": "ameliejyc",
   "license": "ISC",
   "devDependencies": {
     "near-sdk-as": "^3.1.0"
