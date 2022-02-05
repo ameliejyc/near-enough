@@ -73,20 +73,20 @@ export function asNEAR(amount: u128): string {
  *    // => 7000000000000000000000000
  */
 export function toYocto(amount: number): u128 {
-  return u128.mul(ONE_NEAR, u128.from(amount))
+  return u128.mul(ONE_NEAR, u128.from(amount));
 }
 
 /**
  * Function to assert that the contract has called itself
  */
 export function assert_self(): void {
-  const caller = Context.predecessor
-  const self = Context.contractName
+  const caller = Context.predecessor;
+  const self = Context.contractName;
   assert(caller == self, "Only this contract may call itself");
 }
 
 export function assert_single_promise_success(): void {
-  const x = ContractPromise.getResults()
-  assert(x.length == 1, "Expected exactly one promise result")
-  assert(x[0].succeeded, "Expected PromiseStatus to be successful")
+  const x = ContractPromise.getResults();
+  assert(x.length == 1, "Expected exactly one promise result");
+  assert(x[0].succeeded, "Expected PromiseStatus to be successful");
 }

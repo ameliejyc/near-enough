@@ -5,6 +5,6 @@ echo "Call startGame function on the contract"
 echo ---------------------------------------------------------
 echo
 
-near call $CONTRACT startGame '{"animalIndex": 2, "timestamp": "1643551108306"}' --accountId $CONTRACT
+near call $CONTRACT startGame '{"animalIndex": 8, "timestamp": "1644093755623"}' --accountId $CONTRACT
 
 exit 0

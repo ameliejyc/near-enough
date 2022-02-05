@@ -130,6 +130,14 @@ export function endGame(): void {
 }
 
 /**
+ * Returns the latest game.
+ */
+export function getCurrentGame(): Game {
+  const currentGameIndex = games.length - 1;
+  return games[currentGameIndex];
+}
+
+/**
  * Deletes guesses from persistent storage.
  */
 export function deleteGuesses(): void {
@@ -213,12 +221,4 @@ function assertOwner(): void {
     owner == caller,
     "Only the owner of this contract may call this method"
   );
-}
-
-/**
- * Returns the latest game.
- */
-function getCurrentGame(): Game {
-  const currentGameIndex = games.length - 1;
-  return games[currentGameIndex];
 }
