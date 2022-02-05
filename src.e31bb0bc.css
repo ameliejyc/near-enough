@@ -21,7 +21,6 @@ html {
 
 body {
   margin: 0;
-  padding: 1em;
 }
 
 main {
@@ -30,13 +29,10 @@ main {
 }
 
 h1 {
-  background-image: url(/logo-black.eab7a939.svg);
-  background-position: center 1em;
-  background-repeat: no-repeat;
-  background-size: auto 1.5em;
   margin-top: 0;
-  padding: 3.5em 0 0.5em;
+  padding: 1.5em 0 0.5em;
   text-align: center;
+  font-size: 34;
 }
 
 a,
@@ -185,6 +181,30 @@ aside footer *:last-child {
   input:focus {
     box-shadow: 0 0 10em rgba(255, 255, 255, 0.02) inset;
   }
+}
+
+.app-container {
+  display: flex;
+}
+
+.games-list-container {
+  height: 100vh;
+  width: 30vw;
+  padding: 1em;
+  background-color:rgb(3, 54, 1);
+  color: white;
+  scroll-behavior: auto;
+}
+
+.games-list-container > p {
+  text-align: center;
+}
+
+.main-container { 
+  width: 70vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 

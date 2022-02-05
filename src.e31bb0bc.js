@@ -46814,49 +46814,42 @@ function getConfig(env) {
 }
 
 module.exports = getConfig;
-},{}],"utils.js":[function(require,module,exports) {
+},{}],"services/near.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.initContract = initContract;
+exports.getHasPlayed = exports.getGamesHistory = exports.accountId = exports.CONTRACT_ID = void 0;
 exports.login = login;
 exports.logout = logout;
+exports.wallet = exports.startGame = exports.near = exports.makeGuess = void 0;
 
 var _nearApiJs = require("near-api-js");
 
-var _config = _interopRequireDefault(require("./config"));
+var _config = _interopRequireDefault(require("../config"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-const nearConfig = (0, _config.default)("development"); // Initialize contract & set global variables
-
-async function initContract() {
-  // Initialize connection to the NEAR testnet
-  const near = await (0, _nearApiJs.connect)(Object.assign({
-    deps: {
-      keyStore: new _nearApiJs.keyStores.BrowserLocalStorageKeyStore()
-    }
-  }, nearConfig)); // Initializing Wallet based Account. It can work with NEAR testnet wallet that
-  // is hosted at https://wallet.testnet.near.org
-
-  window.walletConnection = new _nearApiJs.WalletConnection(near); // Getting the Account ID. If still unauthorized, it's just empty string
-
-  window.accountId = window.walletConnection.getAccountId(); // Initializing our contract APIs by contract name and configuration
-
-  window.contract = await new _nearApiJs.Contract(window.walletConnection.account(), nearConfig.contractName, {
-    // View methods are read only. They don't modify the state, but usually return some value.
-    viewMethods: ["getGamesHistory"],
-    // Change methods can modify the state. But you don't receive the returned value when called.
-    changeMethods: ["startGame", "makeGuess"]
-  });
-}
+const nearConfig = (0, _config.default)("development");
+const CONTRACT_ID = "dev-1643643790478-61224961916766";
+exports.CONTRACT_ID = CONTRACT_ID;
+const near = new _nearApiJs.Near({
+  networkId: nearConfig.networkId,
+  keyStore: new _nearApiJs.keyStores.BrowserLocalStorageKeyStore(),
+  nodeUrl: nearConfig.nodeUrl,
+  walletUrl: nearConfig.walletUrl
+});
+exports.near = near;
+const wallet = new _nearApiJs.WalletConnection(near, "near-enough");
+exports.wallet = wallet;
+const accountId = wallet.getAccountId();
+exports.accountId = accountId;
 
 function logout() {
-  window.walletConnection.signOut(); // reload page
-
-  window.location.replace(window.location.origin + window.location.pathname);
+  wallet.signOut();
+  localStorage.removeItem(`near-api-js:keystore:${accountId.value}:${nearConfig.networkId}`);
+  accountId.value = wallet.getAccountId();
 }
 
 function login() {
@@ -46864,9 +46857,60 @@ function login() {
   // user's behalf.
   // This works by creating a new access key for the user's account and storing
   // the private key in localStorage.
-  window.walletConnection.requestSignIn(nearConfig.contractName);
-}
-},{"near-api-js":"../node_modules/near-api-js/lib/browser-index.js","./config":"config.js"}],"../node_modules/parcel-bundler/src/builtins/bundle-url.js":[function(require,module,exports) {
+  wallet.requestSignIn(nearConfig.contractName);
+} // -----------------------------------------------------------------------------------
+// view functions
+// -----------------------------------------------------------------------------------
+
+
+const getGamesHistory = () => {
+  return wallet.account().viewFunction(CONTRACT_ID, "getGamesHistory");
+}; //function to get bool value  has  lottery played or  no
+
+
+exports.getGamesHistory = getGamesHistory;
+
+const getHasPlayed = accountId => {
+  return wallet.account().viewFunction(CONTRACT_ID, "get_has_played", {
+    player: accountId
+  });
+}; // -----------------------------------------------------------------------------------
+// change functions
+// -----------------------------------------------------------------------------------
+//function to startGame 
+
+
+exports.getHasPlayed = getHasPlayed;
+
+const startGame = async () => {
+  let response = wallet.account().functionCall({
+    contractId: CONTRACT_ID,
+    methodName: "startGame",
+    args: {
+      accountId: CONTRACT_ID,
+      animalIndex: 2,
+      timestamp: Date.now().toString()
+    }
+  });
+  console.log(response);
+}; //function to startGame 
+
+
+exports.startGame = startGame;
+
+const makeGuess = () => {
+  let response = wallet.account().makeGuess({
+    contractId: CONTRACT_ID,
+    methodName: "startGame",
+    args: {
+      accountId: CONTRACT_ID
+    }
+  });
+  console.log(response);
+};
+
+exports.makeGuess = makeGuess;
+},{"near-api-js":"../node_modules/near-api-js/lib/browser-index.js","../config":"config.js"}],"../node_modules/parcel-bundler/src/builtins/bundle-url.js":[function(require,module,exports) {
 var bundleURL = null;
 
 function getBundleURLCached() {
@@ -46938,7 +46982,7 @@ var reloadCSS = require('_css_loader');
 
 module.hot.dispose(reloadCSS);
 module.hot.accept(reloadCSS);
-},{"./assets/logo-black.svg":[["logo-black.eab7a939.svg","assets/logo-black.svg"],"assets/logo-black.svg"],"./assets/logo-white.svg":[["logo-white.7fec831f.svg","assets/logo-white.svg"],"assets/logo-white.svg"],"_css_loader":"../node_modules/parcel-bundler/src/builtins/css-loader.js"}],"GamesList.jsx":[function(require,module,exports) {
+},{"./assets/logo-white.svg":[["logo-white.7fec831f.svg","assets/logo-white.svg"],"assets/logo-white.svg"],"_css_loader":"../node_modules/parcel-bundler/src/builtins/css-loader.js"}],"GamesList.jsx":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -46957,7 +47001,7 @@ const GamesList = _ref => {
   let {
     gamesHistory
   } = _ref;
-  return /*#__PURE__*/_react.default.createElement("ol", null, gamesHistory.map(_ref2 => {
+  return /*#__PURE__*/_react.default.createElement("ol", null, gamesHistory.reverse().map(_ref2 => {
     let {
       animal,
       winnerAccount,
@@ -46985,7 +47029,7 @@ const GameListItem = _ref3 => {
     guess,
     endTime
   } = _ref3;
-  return /*#__PURE__*/_react.default.createElement("li", null, /*#__PURE__*/_react.default.createElement("div", null, "Animal: ", animal), /*#__PURE__*/_react.default.createElement("div", null, "Guess: ", guess), /*#__PURE__*/_react.default.createElement("div", null, "Ended: ", new Date(Number(endTime)).toLocaleString()), /*#__PURE__*/_react.default.createElement("div", null, "Winner: ", winner), /*#__PURE__*/_react.default.createElement("div", null, "Winnings: ", winnings));
+  return /*#__PURE__*/_react.default.createElement("li", null, /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement("strong", null, "Ended: ", new Date(Number(endTime)).toLocaleString())), /*#__PURE__*/_react.default.createElement("br", null), /*#__PURE__*/_react.default.createElement("div", null, "Animal: ", animal), /*#__PURE__*/_react.default.createElement("div", null, "Winning guess: ", guess), /*#__PURE__*/_react.default.createElement("div", null, "Winner: ", winner), /*#__PURE__*/_react.default.createElement("div", null, "Winnings: ", winnings, " NEAR"));
 };
 },{"react":"../node_modules/react/index.js","./global.css":"global.css"}],"App.js":[function(require,module,exports) {
 "use strict";
@@ -46999,7 +47043,7 @@ require("regenerator-runtime/runtime");
 
 var _react = _interopRequireDefault(require("react"));
 
-var _utils = require("./utils");
+var _near = require("./services/near");
 
 require("./global.css");
 
@@ -47022,121 +47066,52 @@ function App() {
 
   const [showNotification, setShowNotification] = _react.default.useState(false);
 
-  const startGame = () => {
-    return window.contract.startGame({
-      accountId: window.accountId,
-      animalIndex: 1,
-      timestamp: Date.now().toString()
-    }).then(() => {
+  const startGame = async () => {
+    try {
+      startGame();
       console.log("success");
-    });
+    } catch (e) {
+      alert("Something went wrong! " + "Maybe you need to sign out and back in? " + "Check your browser console for more info.");
+      throw e;
+    }
   };
 
   _react.default.useEffect(() => {
-    // in this case, we only care to query the contract when signed in
-    if (window.walletConnection.isSignedIn()) {
-      // window.contract is set by initContract in index.js
-      window.contract.getGamesHistory({
-        accountId: window.accountId
-      }).then(gamesHistory => {
-        setGamesHistory(gamesHistory);
-      });
-    }
-  }, []); // if not signed in, return early with sign-in prompt
+    (0, _near.getGamesHistory)().then(response => setGamesHistory(response));
+  }, []);
 
-
-  if (!window.walletConnection.isSignedIn()) {
-    return /*#__PURE__*/_react.default.createElement("main", null, /*#__PURE__*/_react.default.createElement("p", {
-      style: {
-        textAlign: "center",
-        marginTop: "2.5em"
-      }
-    }, /*#__PURE__*/_react.default.createElement("button", {
-      onClick: _utils.login
-    }, "Sign in")));
-  }
-
-  return /*#__PURE__*/_react.default.createElement(_react.default.Fragment, null, /*#__PURE__*/_react.default.createElement("button", {
+  return /*#__PURE__*/_react.default.createElement("div", {
+    className: "app-container"
+  }, /*#__PURE__*/_react.default.createElement("div", {
+    className: "games-list-container"
+  }, "Games history", gamesHistory.length > 0 ? /*#__PURE__*/_react.default.createElement(_GamesList.GamesList, {
+    gamesHistory: gamesHistory
+  }) : null), /*#__PURE__*/_react.default.createElement("div", {
+    className: "main-container"
+  }, _near.wallet.isSignedIn && /*#__PURE__*/_react.default.createElement("button", {
     className: "link",
     style: {
       float: "right"
     },
-    onClick: _utils.logout
-  }, "Sign out"), /*#__PURE__*/_react.default.createElement("button", {
-    style: {
-      float: "right"
-    },
-    onClick: startGame
-  }, "Start a new game"), /*#__PURE__*/_react.default.createElement("main", null, gamesHistory.length > 0 ? /*#__PURE__*/_react.default.createElement(_GamesList.GamesList, {
-    gamesHistory: gamesHistory
-  }) : null, /*#__PURE__*/_react.default.createElement("h1", null, window.accountId, "!"), /*#__PURE__*/_react.default.createElement("form", {
-    onSubmit: async event => {
-      event.preventDefault(); // get elements from the form using their id attribute
-
-      const {
-        fieldset,
-        greeting
-      } = event.target.elements; // hold onto new user-entered value from React's SynthenticEvent for use after `await` call
-
-      const newGreeting = greeting.value; // disable the form while the value gets updated on-chain
-
-      fieldset.disabled = true;
-
-      try {
-        // make an update call to the smart contract
-        await window.contract.setGreeting({
-          // pass the value that the user entered in the greeting field
-          message: newGreeting
-        });
-      } catch (e) {
-        alert("Something went wrong! " + "Maybe you need to sign out and back in? " + "Check your browser console for more info.");
-        throw e;
-      } finally {
-        // re-enable the form, whether the call succeeded or failed
-        fieldset.disabled = false;
-      } // update local `greeting` variable to match persisted value
-
-
-      setGreeting(newGreeting); // show Notification
-
-      setShowNotification(true); // remove Notification again after css animation completes
-      // this allows it to be shown again next time the form is submitted
-
-      setTimeout(() => {
-        setShowNotification(false);
-      }, 11000);
-    }
-  }, /*#__PURE__*/_react.default.createElement("fieldset", {
-    id: "fieldset"
-  }, /*#__PURE__*/_react.default.createElement("label", {
-    htmlFor: "greeting",
-    style: {
-      display: "block",
-      color: "var(--gray)",
-      marginBottom: "0.5em"
-    }
-  }, "Change greeting"), /*#__PURE__*/_react.default.createElement("div", {
-    style: {
-      display: "flex"
-    }
+    onClick: _near.logout
+  }, "Sign out"), /*#__PURE__*/_react.default.createElement("main", null, /*#__PURE__*/_react.default.createElement("h1", null, "Near Enough"), /*#__PURE__*/_react.default.createElement("p", null, "A wisdom of the crowd guessing game"), _near.wallet.isSignedIn && /*#__PURE__*/_react.default.createElement("p", null, "You are logged in as ", _near.accountId), /*#__PURE__*/_react.default.createElement("div", null, !_near.wallet.isSignedIn ? /*#__PURE__*/_react.default.createElement("p", null, /*#__PURE__*/_react.default.createElement("button", {
+    onClick: _near.login
+  }, "Sign in to play!")) : /*#__PURE__*/_react.default.createElement(_react.default.Fragment, null, /*#__PURE__*/_react.default.createElement("label", {
+    htmlFor: "animal-weight"
   }, /*#__PURE__*/_react.default.createElement("input", {
+    type: "number",
     autoComplete: "off",
-    defaultValue: gamesHistory,
-    id: "greeting",
+    id: "animal-weight",
     onChange: e => setButtonDisabled(e.target.value === gamesHistory),
     style: {
       flex: 1
     }
-  }), /*#__PURE__*/_react.default.createElement("button", {
+  })), /*#__PURE__*/_react.default.createElement("button", {
     disabled: buttonDisabled,
     style: {
       borderRadius: "0 5px 5px 0"
     }
-  }, "Save")))), /*#__PURE__*/_react.default.createElement("ol", null, /*#__PURE__*/_react.default.createElement("li", null, "Look in ", /*#__PURE__*/_react.default.createElement("code", null, "src/App.js"), " and ", /*#__PURE__*/_react.default.createElement("code", null, "src/utils.js"), " \u2013 you'll see ", /*#__PURE__*/_react.default.createElement("code", null, "getGreeting"), " and ", /*#__PURE__*/_react.default.createElement("code", null, "setGreeting"), " ", "being called on ", /*#__PURE__*/_react.default.createElement("code", null, "contract"), ". What's this?"), /*#__PURE__*/_react.default.createElement("li", null, "Ultimately, this ", /*#__PURE__*/_react.default.createElement("code", null, "contract"), " code is defined in", " ", /*#__PURE__*/_react.default.createElement("code", null, "assembly/main.ts"), " \u2013 this is the source code for your", " ", /*#__PURE__*/_react.default.createElement("a", {
-    target: "_blank",
-    rel: "noreferrer",
-    href: "https://docs.near.org/docs/develop/contracts/overview"
-  }, "smart contract"), "."), /*#__PURE__*/_react.default.createElement("li", null, "When you run ", /*#__PURE__*/_react.default.createElement("code", null, "yarn dev"), ", the code in", " ", /*#__PURE__*/_react.default.createElement("code", null, "assembly/main.ts"), " gets deployed to the NEAR testnet. You can see how this happens by looking in ", /*#__PURE__*/_react.default.createElement("code", null, "package.json"), " at the ", /*#__PURE__*/_react.default.createElement("code", null, "scripts"), " section to find the ", /*#__PURE__*/_react.default.createElement("code", null, "dev"), " ", "command.")), /*#__PURE__*/_react.default.createElement("hr", null)), showNotification && /*#__PURE__*/_react.default.createElement(Notification, null));
+  }, "Make guess!")))), showNotification && /*#__PURE__*/_react.default.createElement(Notification, null)));
 } // this component gets rendered by App after the form is submitted
 
 
@@ -47154,7 +47129,59 @@ function Notification() {
     href: `${urlPrefix}/${window.contract.contractId}`
   }, window.contract.contractId), /*#__PURE__*/_react.default.createElement("footer", null, /*#__PURE__*/_react.default.createElement("div", null, "\u2714 Succeeded"), /*#__PURE__*/_react.default.createElement("div", null, "Just now")));
 }
-},{"regenerator-runtime/runtime":"../../node_modules/regenerator-runtime/runtime.js","react":"../node_modules/react/index.js","./utils":"utils.js","./global.css":"global.css","./GamesList":"GamesList.jsx","./config":"config.js"}],"index.js":[function(require,module,exports) {
+},{"regenerator-runtime/runtime":"../../node_modules/regenerator-runtime/runtime.js","react":"../node_modules/react/index.js","./services/near":"services/near.js","./global.css":"global.css","./GamesList":"GamesList.jsx","./config":"config.js"}],"utils.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.initContract = initContract;
+exports.login = login;
+exports.logout = logout;
+
+var _nearApiJs = require("near-api-js");
+
+var _config = _interopRequireDefault(require("./config"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+const nearConfig = (0, _config.default)("development"); // Initialize contract & set global variables
+
+async function initContract() {
+  // Initialize connection to the NEAR testnet
+  const near = await (0, _nearApiJs.connect)(Object.assign({
+    deps: {
+      keyStore: new _nearApiJs.keyStores.BrowserLocalStorageKeyStore()
+    }
+  }, nearConfig)); // Initializing Wallet based Account. It can work with NEAR testnet wallet that
+  // is hosted at https://wallet.testnet.near.org
+
+  window.walletConnection = new _nearApiJs.WalletConnection(near); // Getting the Account ID. If still unauthorized, it's just empty string
+
+  window.accountId = window.walletConnection.getAccountId(); // Initializing our contract APIs by contract name and configuration
+
+  window.contract = await new _nearApiJs.Contract(window.walletConnection.account(), nearConfig.contractName, {
+    // View methods are read only. They don't modify the state, but usually return some value.
+    viewMethods: ["getGamesHistory"],
+    // Change methods can modify the state. But you don't receive the returned value when called.
+    changeMethods: ["startGame", "makeGuess"]
+  });
+}
+
+function logout() {
+  window.walletConnection.signOut(); // reload page
+
+  window.location.replace(window.location.origin + window.location.pathname);
+}
+
+function login() {
+  // Allow the current app to make calls to the specified contract on the
+  // user's behalf.
+  // This works by creating a new access key for the user's account and storing
+  // the private key in localStorage.
+  window.walletConnection.requestSignIn(nearConfig.contractName);
+}
+},{"near-api-js":"../node_modules/near-api-js/lib/browser-index.js","./config":"config.js"}],"index.js":[function(require,module,exports) {
 "use strict";
 
 var _react = _interopRequireDefault(require("react"));
@@ -47198,7 +47225,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "60074" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "62541" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
