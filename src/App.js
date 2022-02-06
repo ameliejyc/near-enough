@@ -85,7 +85,7 @@ export default function App() {
             className="link"
             onClick={() => setShowMainContent(!showMainContent)}
           >
-            {showMainContent ? "What is NEAR enough?" : "Back to the game!"}
+            {showMainContent ? "What is NEAR enough?" : "Let's play"}
           </button>
           {showNotification && <Notification />}
         </div>

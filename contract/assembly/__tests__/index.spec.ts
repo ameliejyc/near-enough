@@ -45,17 +45,17 @@ describe("startGame method", () => {
   });
 });
 
-describe("deleteCurrentGame method", () => {
+describe("deleteLastGame method", () => {
   it("pops last game from games array when caller is owner", () => {
     setCallerAsOwner();
     contract.startGame(animalIndex, timestamp);
-    contract.deleteCurrentGame();
+    contract.deleteLastGame();
     expect(games.length).toStrictEqual(0);
   });
 
   it("throws an error when caller is not owner", () => {
     expect(() => {
-      contract.deleteCurrentGame();
+      contract.deleteLastGame();
     }).toThrow();
   });
 });
@@ -78,7 +78,7 @@ describe("makeGuess method", () => {
   });
 
   it("throws an error when games array is empty", () => {
-    contract.deleteCurrentGame();
+    contract.deleteLastGame();
     expect(() => {
       contract.makeGuess(8, guessTimestamp);
     }).toThrow();
@@ -120,7 +120,7 @@ describe("deleteGuesses method", () => {
 
   it("throws an error when caller is not owner", () => {
     expect(() => {
-      contract.deleteCurrentGame();
+      contract.deleteLastGame();
     }).toThrow();
   });
 });

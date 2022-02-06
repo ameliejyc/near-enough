@@ -15,7 +15,7 @@ export const GamesList = ({ gamesHistory }) => {
                 animal={animal}
                 winner={winnerAccount}
                 winnings={winnings.transferred}
-                guess={winnerGuess}
+                guess={Number(winnerGuess) / 1000}
                 endTime={endTime}
               />
             );
@@ -35,7 +35,7 @@ const GameListItemInProgress = ({ animal, winnings, endTime }) => {
       </div>
       <br />
       <div>Animal: {animal}</div>
-      <div>Winnings: {winnings} NEAR</div>
+      <div>Current winnings: {winnings} Ⓝ</div>
     </li>
   );
 };
@@ -48,9 +48,9 @@ const GameListItem = ({ animal, winner, winnings, guess, endTime }) => {
       </div>
       <br />
       <div>Animal: {animal}</div>
-      <div>Winning guess: {guess}</div>
+      <div>Winning guess: {guess} kg</div>
       <div>Winner: {winner}</div>
-      <div>Winnings: {winnings} NEAR</div>
+      <div>Winnings: {winnings} Ⓝ</div>
     </li>
   );
 };

@@ -31,7 +31,7 @@ export class Game {
   wallet: string;
   endTime: u64;
   winnerAccount: string;
-  winnerGuess: f32;
+  winnerGuess: i32;
   winnings: WinningsTracker = new WinningsTracker();
   // currently passing animalIndex and endTime from the frontend to avoid incomprehensible issues in AS
   constructor(animalIndex: i32, timestamp: u64) {
@@ -51,8 +51,8 @@ export class Game {
 @nearBindgen
 export class Guess {
   sender: string;
-  guess: f32;
-  constructor(guess: f32) {
+  guess: i32;
+  constructor(guess: i32) {
     this.sender = context.sender;
     this.guess = guess;
   }

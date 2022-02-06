@@ -7,7 +7,6 @@ import { Animal } from "./Animal";
 export const MainContent = ({ currentGame }) => {
   const [guess, setGuess] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  // when the user has not yet interacted with the form, disable the button
   const [buttonDisabled, setButtonDisabled] = React.useState(true);
 
   if (!currentGame)
@@ -16,12 +15,11 @@ export const MainContent = ({ currentGame }) => {
   const handleSubmitGuess = async () => {
     setIsSubmitting(true);
     setButtonDisabled(true);
-    let guessFloat = guess;
-    console.log(guessFloat);
     try {
-      const response = await makeGuess(guessFloat);
-      console.log("success", response);
-    } catch (error) {}
+      await makeGuess(Number(guess) * 1000);
+    } catch (error) {
+      console.log(error);
+    }
     setIsSubmitting(false);
     setGuess(0);
   };
@@ -40,11 +38,13 @@ export const MainContent = ({ currentGame }) => {
           ) : (
             <>
               <div className="animal-input-container">
-                <label htmlFor="animal-weight">How much does it weigh?</label>
+                <label htmlFor="animal-weight">
+                  How much does this {currentGame.animal} weigh?
+                </label>
                 <input
                   className="animal-input"
                   type="number"
-                  step="0.01"
+                  step="0.1"
                   min="0"
                   max="100000000"
                   autoComplete="off"
@@ -54,7 +54,6 @@ export const MainContent = ({ currentGame }) => {
                     setGuess(e.target.value);
                     setButtonDisabled(guess === 0 || guess === 100000000);
                   }}
-                  style={{ flex: 1 }}
                 />
                 <span>kg</span>
               </div>
@@ -63,7 +62,7 @@ export const MainContent = ({ currentGame }) => {
                 style={{ marginBottom: "30px" }}
                 onClick={handleSubmitGuess}
               >
-                Make guess!
+                {isSubmitting ? "Submitting" : "Make a guess!"}
               </button>
               <span
                 style={{ fontSize: "medium", marginBottom: "20px" }}

@@ -34,8 +34,8 @@ export function startGame(animalIndex: i32, timestamp: u64): void {
  * Deletes the current game.
  * NOTE: This is a change method. It will modify state.
  */
-export function deleteCurrentGame(): void {
-  assertOwner();
+export function deleteLastGame(): void {
+  // assertOwner();
   // Remove the last game from the persistent collection
   games.pop();
 }
@@ -44,7 +44,7 @@ export function deleteCurrentGame(): void {
  * Adds a guess to the current game's guesses.
  * NOTE: This is a change method. Which means it will modify the state.
  */
-export function makeGuess(value: f32, timestamp: u64): void {
+export function makeGuess(value: i32, timestamp: u64): void {
   // Check there is a game available
   assert(games.length > 0, "There are no games available");
 
@@ -65,7 +65,7 @@ export function makeGuess(value: f32, timestamp: u64): void {
 
   // Check the guess value is within bounds
   assert(0 < value, "Guess value is not within range");
-  assert(value < 1000000, "Guess value is not within range");
+  assert(value < 1000000000, "Guess value is not within range");
 
   // Guard against too much money being deposited to this account in beta
   assertFinancialSafety(deposit);

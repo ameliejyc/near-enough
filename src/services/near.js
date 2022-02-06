@@ -2,6 +2,16 @@ import { keyStores, Near, WalletConnection } from "near-api-js";
 import getConfig from "../config";
 import Big from "big.js";
 
+const PAY_TO_PLAY = 0.1;
+
+export const BOATLOAD_OF_GAS = Big(3)
+  .times(10 ** 13)
+  .toFixed();
+
+export const DONATION_VALUE = Big(PAY_TO_PLAY)
+  .times(10 ** 24)
+  .toFixed();
+
 const nearConfig = getConfig("development");
 export const CONTRACT_ID =
   process.env.NODE_ENV === "development"
@@ -68,13 +78,10 @@ export const startGame = async (index) => {
 };
 
 export const makeGuess = async (value) => {
-  const donation = Big(0.1)
-    .times(10 ** 24)
-    .toFixed();
   let response = await wallet.account().functionCall({
     contractId: CONTRACT_ID,
     methodName: "makeGuess",
-    amount: donation,
+    attachedDeposit: DONATION_VALUE,
     args: { value, timestamp: Date.now().toString(), accountId: CONTRACT_ID },
   });
   console.log(response);
