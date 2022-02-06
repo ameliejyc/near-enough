@@ -39,7 +39,15 @@ export default function App() {
   };
 
   React.useEffect(() => {
-    getGamesHistory().then((games) => setGamesHistory(games));
+    const getHistory = async () => {
+      try {
+        const games = await getGamesHistory();
+        setGamesHistory(games);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    getHistory();
   }, []);
 
   React.useEffect(() => {
@@ -55,24 +63,32 @@ export default function App() {
       <div className="games-list-container">
         Games history
         {gamesHistory.length > 0 ? (
-          <GamesList gamesHistory={gamesHistory.reverse()} />
+          <GamesList gamesHistory={gamesHistory} />
         ) : null}
       </div>
-      <div className="main-container">
-        {wallet.isSignedIn && (
+      <div style={{ flexDirection: "column" }}>
+        {wallet.isSignedIn() && (
           <button className="link" style={{ float: "right" }} onClick={logout}>
             Sign out
           </button>
         )}
-        {showMainContent ? (
-          <MainContent currentGame={currentGame} gamesHistory={gamesHistory} />
-        ) : (
-          <GameInfo />
-        )}
-        <button onClick={() => setShowMainContent(!showMainContent)}>
-          {showMainContent ? "What is NEAR enough?" : "Back to the game!"}
-        </button>
-        {showNotification && <Notification />}
+        <div className="main-container">
+          {showMainContent ? (
+            <MainContent
+              currentGame={currentGame}
+              gamesHistory={gamesHistory}
+            />
+          ) : (
+            <GameInfo />
+          )}
+          <button
+            className="link"
+            onClick={() => setShowMainContent(!showMainContent)}
+          >
+            {showMainContent ? "What is NEAR enough?" : "Back to the game!"}
+          </button>
+          {showNotification && <Notification />}
+        </div>
       </div>
     </div>
   );

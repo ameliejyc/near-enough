@@ -1,5 +1,6 @@
 import { keyStores, Near, WalletConnection } from "near-api-js";
 import getConfig from "../config";
+import Big from "big.js";
 
 const nearConfig = getConfig("development");
 export const CONTRACT_ID =
@@ -19,10 +20,7 @@ export const accountId = wallet.getAccountId();
 
 export function logout() {
   wallet.signOut();
-  localStorage.removeItem(
-    `near-api-js:keystore:${accountId.value}:${nearConfig.networkId}`
-  );
-  accountId.value = wallet.getAccountId();
+  window.location.replace(window.location.origin + window.location.pathname);
 }
 
 export function login() {
@@ -37,8 +35,8 @@ export function login() {
 // view functions
 // -----------------------------------------------------------------------------------
 
-export const getGamesHistory = () => {
-  return wallet.account().viewFunction(CONTRACT_ID, "getGamesHistory");
+export const getGamesHistory = async () => {
+  return await wallet.account().viewFunction(CONTRACT_ID, "getGamesHistory");
 };
 
 //function to get bool value  has  lottery played or  no
@@ -48,34 +46,36 @@ export const getHasPlayed = (accountId) => {
     .viewFunction(CONTRACT_ID, "get_has_played", { player: accountId });
 };
 
-export const getCurrentGame = () => {
-  return wallet.account().viewFunction(CONTRACT_ID, "getCurrentGame");
+export const getCurrentGame = async () => {
+  return await wallet.account().viewFunction(CONTRACT_ID, "getCurrentGame");
 };
 
 // -----------------------------------------------------------------------------------
 // change functions
 // -----------------------------------------------------------------------------------
 
-//function to startGame
-export const startGame = async () => {
-  let response = wallet.account().functionCall({
+export const startGame = async (index) => {
+  let response = await wallet.account().functionCall({
     contractId: CONTRACT_ID,
     methodName: "startGame",
     args: {
       accountId: CONTRACT_ID,
-      animalIndex: 2,
+      animalIndex: index,
       timestamp: Date.now().toString(),
     },
   });
   console.log(response);
 };
 
-//function to startGame
-export const makeGuess = () => {
-  let response = wallet.account().makeGuess({
+export const makeGuess = async (value) => {
+  const donation = Big(0.1)
+    .times(10 ** 24)
+    .toFixed();
+  let response = await wallet.account().functionCall({
     contractId: CONTRACT_ID,
-    methodName: "startGame",
-    args: { accountId: CONTRACT_ID },
+    methodName: "makeGuess",
+    amount: donation,
+    args: { value, timestamp: Date.now().toString(), accountId: CONTRACT_ID },
   });
   console.log(response);
 };

@@ -2,9 +2,10 @@ import React from "react";
 import "./global.css";
 
 export const GamesList = ({ gamesHistory }) => {
+  const reversedGamesHistory = [...gamesHistory].reverse();
   return (
     <ol>
-      {gamesHistory.map(
+      {reversedGamesHistory.map(
         ({ animal, winnerAccount, winnings, winnerGuess, endTime }) => {
           if (Date.now() < endTime) {
             return <GameListItemInProgress animal={animal} endTime={endTime} />;

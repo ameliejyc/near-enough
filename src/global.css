@@ -3,14 +3,14 @@
 }
 
 html {
-  --bg: #efefef;
+  --bg: #f5e9e9;
   --fg: #1e1e1e;
   --gray: #555;
   --light-gray: #ccc;
   --shadow: #e6e6e6;
   --success: rgb(90, 206, 132);
-  --primary: #ff585d;
-  --secondary: #0072ce;
+  --primary: hotpink;
+  --secondary: rgb(9, 155, 4);
 
   color: var(--fg);
   font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica,
@@ -60,7 +60,7 @@ input {
 
 button {
   background-color: var(--secondary);
-  border-radius: 5px;
+  border-radius: 15px;
   border: none;
   color: #efefef;
   cursor: pointer;
@@ -98,7 +98,7 @@ button[disabled] {
   display: block;
   width: 0.8em;
   height: 0.8em;
-  border-radius: 50%;
+  border-radius: 15px;
   border: 2px solid #fff;
   border-color: var(--fg) transparent var(--fg) transparent;
   animation: loader 1.2s linear infinite;
@@ -121,9 +121,8 @@ fieldset {
 }
 
 input {
-  background-color: var(--shadow);
-  border: none;
-  border-radius: 5px 0 0 5px;
+  border: 2px var(--primary) solid;
+  border-radius: 15px;
   caret-color: var(--primary);
   color: inherit;
   padding: 0.5em 1em;
@@ -208,8 +207,22 @@ aside footer *:last-child {
   height: 300px;
 }
 
+.animal-input-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 15px;
+}
+
+.animal-input {
+  width: 170px;
+  margin: 0 10px;
+  text-align: center;
+}
+
 .animal-name {
   margin-top: -15px;
+  margin-bottom: 0px;
   text-transform: full-width;
   font-size: xx-large;
 }
