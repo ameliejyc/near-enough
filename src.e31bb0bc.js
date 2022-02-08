@@ -50325,7 +50325,7 @@ __exportStar(require("./browser-connect"), exports);
 require("error-polyfill");
 
 },{"./key_stores/browser-index":"../node_modules/near-api-js/lib/key_stores/browser-index.js","./common-index":"../node_modules/near-api-js/lib/common-index.js","./browser-connect":"../node_modules/near-api-js/lib/browser-connect.js","error-polyfill":"../node_modules/error-polyfill/index.js"}],"config.js":[function(require,module,exports) {
-const CONTRACT_NAME = "dev-1644060009063-98429528712440" || "nearenough.testnet";
+const CONTRACT_NAME = "dev-1644306586038-28714182473417" || "nearenough.testnet";
 
 function getConfig(env) {
   switch (env) {
@@ -51434,7 +51434,7 @@ var define;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.getHasPlayed = exports.getGamesHistory = exports.getCurrentGame = exports.accountId = exports.DONATION_VALUE = exports.CONTRACT_ID = exports.BOATLOAD_OF_GAS = void 0;
+exports.getGamesHistory = exports.getCurrentGame = exports.accountId = exports.DONATION_VALUE = exports.CONTRACT_ID = exports.BOATLOAD_OF_GAS = void 0;
 exports.login = login;
 exports.logout = logout;
 exports.wallet = exports.startGame = exports.near = exports.makeGuess = void 0;
@@ -51453,7 +51453,7 @@ exports.BOATLOAD_OF_GAS = BOATLOAD_OF_GAS;
 const DONATION_VALUE = (0, _big.default)(PAY_TO_PLAY).times(10 ** 24).toFixed();
 exports.DONATION_VALUE = DONATION_VALUE;
 const nearConfig = (0, _config.default)("development");
-const CONTRACT_ID = "development" === "development" ? "dev-1644060009063-98429528712440" : "nearenough.testnet";
+const CONTRACT_ID = "development" === "development" ? "dev-1644306586038-28714182473417" : "nearenough.testnet";
 exports.CONTRACT_ID = CONTRACT_ID;
 const near = new _nearApiJs.Near({
   networkId: nearConfig.networkId,
@@ -51485,18 +51485,9 @@ function login() {
 
 const getGamesHistory = async () => {
   return await wallet.account().viewFunction(CONTRACT_ID, "getGamesHistory");
-}; //function to get bool value  has  lottery played or  no
-
-
-exports.getGamesHistory = getGamesHistory;
-
-const getHasPlayed = accountId => {
-  return wallet.account().viewFunction(CONTRACT_ID, "get_has_played", {
-    player: accountId
-  });
 };
 
-exports.getHasPlayed = getHasPlayed;
+exports.getGamesHistory = getGamesHistory;
 
 const getCurrentGame = async () => {
   return await wallet.account().viewFunction(CONTRACT_ID, "getCurrentGame");
@@ -51619,6 +51610,8 @@ exports.GamesList = void 0;
 
 var _react = _interopRequireDefault(require("react"));
 
+var _big = _interopRequireDefault(require("big.js"));
+
 require("./global.css");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -51640,7 +51633,8 @@ const GamesList = _ref => {
     if (Date.now() < endTime) {
       return /*#__PURE__*/_react.default.createElement(GameListItemInProgress, {
         animal: animal,
-        endTime: endTime
+        endTime: endTime,
+        winnings: winnings
       });
     } else return /*#__PURE__*/_react.default.createElement(GameListItem, {
       animal: animal,
@@ -51657,10 +51651,13 @@ exports.GamesList = GamesList;
 const GameListItemInProgress = _ref3 => {
   let {
     animal,
-    winnings,
-    endTime
+    winnings
   } = _ref3;
-  return /*#__PURE__*/_react.default.createElement("li", null, /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement("strong", null, "Current game ends at: ", new Date(Number(endTime)).toLocaleString())), /*#__PURE__*/_react.default.createElement("br", null), /*#__PURE__*/_react.default.createElement("div", null, "Animal: ", animal), /*#__PURE__*/_react.default.createElement("div", null, "Current winnings: ", winnings, " \u24C3"));
+  return /*#__PURE__*/_react.default.createElement("li", {
+    style: {
+      color: "rgb(2, 202, 10)"
+    }
+  }, /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement("strong", null, "Game is in progress! --->")), /*#__PURE__*/_react.default.createElement("div", null, "Animal: ", animal), /*#__PURE__*/_react.default.createElement("div", null, "Current winnings: ", (winnings.total / 10 ** 24).toFixed(1), " \u24C3"));
 };
 
 const GameListItem = _ref4 => {
@@ -51673,7 +51670,7 @@ const GameListItem = _ref4 => {
   } = _ref4;
   return /*#__PURE__*/_react.default.createElement("li", null, /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement("strong", null, "Ended: ", new Date(Number(endTime)).toLocaleString())), /*#__PURE__*/_react.default.createElement("br", null), /*#__PURE__*/_react.default.createElement("div", null, "Animal: ", animal), /*#__PURE__*/_react.default.createElement("div", null, "Winning guess: ", guess, " kg"), /*#__PURE__*/_react.default.createElement("div", null, "Winner: ", winner), /*#__PURE__*/_react.default.createElement("div", null, "Winnings: ", winnings, " \u24C3"));
 };
-},{"react":"../node_modules/react/index.js","./global.css":"global.css"}],"Animal.js":[function(require,module,exports) {
+},{"react":"../node_modules/react/index.js","big.js":"../node_modules/big.js/big.js","./global.css":"global.css"}],"Animal.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -51741,7 +51738,7 @@ const MainContent = _ref => {
     setButtonDisabled(true);
 
     try {
-      await (0, _near.makeGuess)(Number(guess) * 1000);
+      await (0, _near.makeGuess)(Math.round(guess * 1000));
     } catch (error) {
       console.log(error);
     }
@@ -51750,9 +51747,14 @@ const MainContent = _ref => {
     setGuess(0);
   };
 
-  return /*#__PURE__*/_react.default.createElement("main", null, /*#__PURE__*/_react.default.createElement("h2", null, "Today's animal is"), /*#__PURE__*/_react.default.createElement("p", {
+  return /*#__PURE__*/_react.default.createElement("main", null, /*#__PURE__*/_react.default.createElement("h2", null, "Today's game is"), /*#__PURE__*/_react.default.createElement("p", {
     className: "animal-name"
-  }, currentGame.animal), /*#__PURE__*/_react.default.createElement(_react.default.Fragment, null, /*#__PURE__*/_react.default.createElement("div", {
+  }, currentGame.animal), /*#__PURE__*/_react.default.createElement("p", {
+    style: {
+      fontSize: "medium",
+      marginTop: 0
+    }
+  }, "Ends at ", new Date(Number(currentGame.endTime)).toLocaleString()), /*#__PURE__*/_react.default.createElement(_react.default.Fragment, null, /*#__PURE__*/_react.default.createElement("div", {
     style: {
       display: "flex",
       flexDirection: "column"
@@ -51769,7 +51771,7 @@ const MainContent = _ref => {
   }, "How much does this ", currentGame.animal, " weigh?"), /*#__PURE__*/_react.default.createElement("input", {
     className: "animal-input",
     type: "number",
-    step: "0.1",
+    step: "0.01",
     min: "0",
     max: "100000000",
     autoComplete: "off",
@@ -51782,7 +51784,7 @@ const MainContent = _ref => {
   }), /*#__PURE__*/_react.default.createElement("span", null, "kg")), /*#__PURE__*/_react.default.createElement("button", {
     disabled: buttonDisabled,
     style: {
-      marginBottom: "30px"
+      marginBottom: "20px"
     },
     onClick: handleSubmitGuess
   }, isSubmitting ? "Submitting" : "Make a guess!"), /*#__PURE__*/_react.default.createElement("span", {
@@ -51808,7 +51810,7 @@ var _react = _interopRequireDefault(require("react"));
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 const GameInfo = () => {
-  return /*#__PURE__*/_react.default.createElement("main", null, /*#__PURE__*/_react.default.createElement("h1", null, "NEAR enough"), /*#__PURE__*/_react.default.createElement("p", null, "...is a wisdom of the crowd guessing game."), /*#__PURE__*/_react.default.createElement("p", null, "The winning guess is the one closest to the average of what the crowd thinks is the truth. If enough people play, this should be close to reality. That is the wisdom of the crowd!"), /*#__PURE__*/_react.default.createElement("p", null, "Each game has one winner (if there are multiple winning answers the first one wins). To play, each player donates 0.1 NEAR. The winner receives all the money in the pot."));
+  return /*#__PURE__*/_react.default.createElement("main", null, /*#__PURE__*/_react.default.createElement("h1", null, "NEAR enough"), /*#__PURE__*/_react.default.createElement("p", null, "...is a wisdom of the crowd guessing game where participants guess the weight of the animal in the picture."), /*#__PURE__*/_react.default.createElement("p", null, "The winning guess is the one closest to the average of what the crowd thinks is the truth. If enough people play, this should be close to the real answer. That is the wisdom of the crowd!"), /*#__PURE__*/_react.default.createElement("p", null, "Each game has one winner (if there are multiple winning answers the first one wins). To play, each player donates 0.1 NEAR. The winner receives all the money in the pot."));
 };
 
 exports.GameInfo = GameInfo;
@@ -51965,7 +51967,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "53783" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "55164" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
