@@ -25,7 +25,7 @@ body {
 
 main {
   margin: 0 auto;
-  max-width: 25em;
+  max-width: 30em;
   text-align: center;
 }
 
@@ -180,7 +180,7 @@ aside footer *:last-child {
   padding: 1em;
   background-color: var(--primary);
   color: white;
-  scroll-behavior: auto;
+  overflow-y: auto;
 }
 
 .games-list-container > p {
@@ -211,11 +211,11 @@ aside footer *:last-child {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 15px;
+  margin: 15px 0;
 }
 
 .animal-input {
-  width: 160px;
+  width: 170px;
   margin: 0 10px;
   text-align: center;
 }

@@ -51434,7 +51434,7 @@ var define;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.getHasPlayed = exports.getGamesHistory = exports.getCurrentGame = exports.accountId = exports.CONTRACT_ID = void 0;
+exports.getHasPlayed = exports.getGamesHistory = exports.getCurrentGame = exports.accountId = exports.DONATION_VALUE = exports.CONTRACT_ID = exports.BOATLOAD_OF_GAS = void 0;
 exports.login = login;
 exports.logout = logout;
 exports.wallet = exports.startGame = exports.near = exports.makeGuess = void 0;
@@ -51447,6 +51447,11 @@ var _big = _interopRequireDefault(require("big.js"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+const PAY_TO_PLAY = 0.1;
+const BOATLOAD_OF_GAS = (0, _big.default)(3).times(10 ** 13).toFixed();
+exports.BOATLOAD_OF_GAS = BOATLOAD_OF_GAS;
+const DONATION_VALUE = (0, _big.default)(PAY_TO_PLAY).times(10 ** 24).toFixed();
+exports.DONATION_VALUE = DONATION_VALUE;
 const nearConfig = (0, _config.default)("development");
 const CONTRACT_ID = "development" === "development" ? "dev-1644060009063-98429528712440" : "nearenough.testnet";
 exports.CONTRACT_ID = CONTRACT_ID;
@@ -51518,11 +51523,10 @@ const startGame = async index => {
 exports.startGame = startGame;
 
 const makeGuess = async value => {
-  const donation = (0, _big.default)(0.1).times(10 ** 24).toFixed();
   let response = await wallet.account().functionCall({
     contractId: CONTRACT_ID,
     methodName: "makeGuess",
-    amount: donation,
+    attachedDeposit: DONATION_VALUE,
     args: {
       value,
       timestamp: Date.now().toString(),
@@ -51642,7 +51646,7 @@ const GamesList = _ref => {
       animal: animal,
       winner: winnerAccount,
       winnings: winnings.transferred,
-      guess: winnerGuess,
+      guess: Number(winnerGuess) / 1000,
       endTime: endTime
     });
   }));
@@ -51656,7 +51660,7 @@ const GameListItemInProgress = _ref3 => {
     winnings,
     endTime
   } = _ref3;
-  return /*#__PURE__*/_react.default.createElement("li", null, /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement("strong", null, "Current game ends at: ", new Date(Number(endTime)).toLocaleString())), /*#__PURE__*/_react.default.createElement("br", null), /*#__PURE__*/_react.default.createElement("div", null, "Animal: ", animal), /*#__PURE__*/_react.default.createElement("div", null, "Winnings: ", winnings, " NEAR"));
+  return /*#__PURE__*/_react.default.createElement("li", null, /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement("strong", null, "Current game ends at: ", new Date(Number(endTime)).toLocaleString())), /*#__PURE__*/_react.default.createElement("br", null), /*#__PURE__*/_react.default.createElement("div", null, "Animal: ", animal), /*#__PURE__*/_react.default.createElement("div", null, "Current winnings: ", winnings, " \u24C3"));
 };
 
 const GameListItem = _ref4 => {
@@ -51667,7 +51671,7 @@ const GameListItem = _ref4 => {
     guess,
     endTime
   } = _ref4;
-  return /*#__PURE__*/_react.default.createElement("li", null, /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement("strong", null, "Ended: ", new Date(Number(endTime)).toLocaleString())), /*#__PURE__*/_react.default.createElement("br", null), /*#__PURE__*/_react.default.createElement("div", null, "Animal: ", animal), /*#__PURE__*/_react.default.createElement("div", null, "Winning guess: ", guess), /*#__PURE__*/_react.default.createElement("div", null, "Winner: ", winner), /*#__PURE__*/_react.default.createElement("div", null, "Winnings: ", winnings, " NEAR"));
+  return /*#__PURE__*/_react.default.createElement("li", null, /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement("strong", null, "Ended: ", new Date(Number(endTime)).toLocaleString())), /*#__PURE__*/_react.default.createElement("br", null), /*#__PURE__*/_react.default.createElement("div", null, "Animal: ", animal), /*#__PURE__*/_react.default.createElement("div", null, "Winning guess: ", guess, " kg"), /*#__PURE__*/_react.default.createElement("div", null, "Winner: ", winner), /*#__PURE__*/_react.default.createElement("div", null, "Winnings: ", winnings, " \u24C3"));
 };
 },{"react":"../node_modules/react/index.js","./global.css":"global.css"}],"Animal.js":[function(require,module,exports) {
 "use strict";
@@ -51726,7 +51730,7 @@ const MainContent = _ref => {
     currentGame
   } = _ref;
   const [guess, setGuess] = (0, _react.useState)(0);
-  const [isSubmitting, setIsSubmitting] = (0, _react.useState)(false); // when the user has not yet interacted with the form, disable the button
+  const [isSubmitting, setIsSubmitting] = (0, _react.useState)(false);
 
   const [buttonDisabled, setButtonDisabled] = _react.default.useState(true);
 
@@ -51735,13 +51739,12 @@ const MainContent = _ref => {
   const handleSubmitGuess = async () => {
     setIsSubmitting(true);
     setButtonDisabled(true);
-    let guessFloat = guess;
-    console.log(guessFloat);
 
     try {
-      const response = await (0, _near.makeGuess)(guessFloat);
-      console.log("success", response);
-    } catch (error) {}
+      await (0, _near.makeGuess)(Number(guess) * 1000);
+    } catch (error) {
+      console.log(error);
+    }
 
     setIsSubmitting(false);
     setGuess(0);
@@ -51763,10 +51766,10 @@ const MainContent = _ref => {
     className: "animal-input-container"
   }, /*#__PURE__*/_react.default.createElement("label", {
     htmlFor: "animal-weight"
-  }, "How much does it weigh?"), /*#__PURE__*/_react.default.createElement("input", {
+  }, "How much does this ", currentGame.animal, " weigh?"), /*#__PURE__*/_react.default.createElement("input", {
     className: "animal-input",
     type: "number",
-    step: "0.01",
+    step: "0.1",
     min: "0",
     max: "100000000",
     autoComplete: "off",
@@ -51775,9 +51778,6 @@ const MainContent = _ref => {
     onChange: e => {
       setGuess(e.target.value);
       setButtonDisabled(guess === 0 || guess === 100000000);
-    },
-    style: {
-      flex: 1
     }
   }), /*#__PURE__*/_react.default.createElement("span", null, "kg")), /*#__PURE__*/_react.default.createElement("button", {
     disabled: buttonDisabled,
@@ -51785,7 +51785,7 @@ const MainContent = _ref => {
       marginBottom: "30px"
     },
     onClick: handleSubmitGuess
-  }, "Make guess!"), /*#__PURE__*/_react.default.createElement("span", {
+  }, isSubmitting ? "Submitting" : "Make a guess!"), /*#__PURE__*/_react.default.createElement("span", {
     style: {
       fontSize: "medium",
       marginBottom: "20px"
@@ -51808,7 +51808,7 @@ var _react = _interopRequireDefault(require("react"));
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 const GameInfo = () => {
-  return /*#__PURE__*/_react.default.createElement("main", null, /*#__PURE__*/_react.default.createElement("h1", null, "NEAR Enough"), /*#__PURE__*/_react.default.createElement("p", null, "is a wisdom of the crowd guessing game."), /*#__PURE__*/_react.default.createElement("p", null, "Each game has one winner (if there are multiple winning answers the first one wins). The winning guess is not the one closest to the truth, but the one closest to what the crowd thinks is the truth. If enough people play, this should be pretty close!"));
+  return /*#__PURE__*/_react.default.createElement("main", null, /*#__PURE__*/_react.default.createElement("h1", null, "NEAR enough"), /*#__PURE__*/_react.default.createElement("p", null, "...is a wisdom of the crowd guessing game."), /*#__PURE__*/_react.default.createElement("p", null, "The winning guess is the one closest to the average of what the crowd thinks is the truth. If enough people play, this should be close to reality. That is the wisdom of the crowd!"), /*#__PURE__*/_react.default.createElement("p", null, "Each game has one winner (if there are multiple winning answers the first one wins). To play, each player donates 0.1 NEAR. The winner receives all the money in the pot."));
 };
 
 exports.GameInfo = GameInfo;
@@ -51907,7 +51907,7 @@ function App() {
   }) : /*#__PURE__*/_react.default.createElement(_GameInfo.GameInfo, null), /*#__PURE__*/_react.default.createElement("button", {
     className: "link",
     onClick: () => setShowMainContent(!showMainContent)
-  }, showMainContent ? "What is NEAR enough?" : "Back to the game!"), showNotification && /*#__PURE__*/_react.default.createElement(Notification, null))));
+  }, showMainContent ? "What is NEAR enough?" : "Let's play"), showNotification && /*#__PURE__*/_react.default.createElement(Notification, null))));
 } // this component gets rendered by App after the form is submitted
 
 
@@ -51965,7 +51965,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "51517" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "53783" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
