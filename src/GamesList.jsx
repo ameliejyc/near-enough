@@ -27,13 +27,12 @@ export const GamesList = ({ gamesHistory }) => {
 
 const GameListItemInProgress = ({ animal, winnings, endTime }) => {
   return (
-    <li>
+    <li style={{color: "rgb(2, 202, 10)"}}>
       <div>
         <strong>
-          Current game ends at: {new Date(Number(endTime)).toLocaleString()}
+          Game is in progress! --->
         </strong>
       </div>
-      <br />
       <div>Animal: {animal}</div>
       <div>Current winnings: {winnings} Ⓝ</div>
     </li>

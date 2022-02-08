@@ -79,6 +79,7 @@ export function makeGuess(value: i32, timestamp: u64): void {
   guesses.push(guess);
   // Update the current Game in the games persistent collection
   games.replace(games.length - 1, currentGame);
+  logging.log("Guess made successfully! Fingers crossed.");
 }
 
 /**
@@ -102,7 +103,7 @@ export function getGamesHistory(): Game[] {
 export function getGuesses(): Guess[] {
   assertOwner();
   if (guesses.length < 1) return [];
-  const numGuesses = guesses.length - 1;
+  const numGuesses = guesses.length;
   const result = new Array<Guess>(numGuesses);
   for (let i = 0; i < numGuesses; i++) {
     result[i] = guesses[i];

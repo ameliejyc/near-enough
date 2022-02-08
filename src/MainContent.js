@@ -16,7 +16,7 @@ export const MainContent = ({ currentGame }) => {
     setIsSubmitting(true);
     setButtonDisabled(true);
     try {
-      await makeGuess(Number(guess) * 1000);
+      await makeGuess(Math.round(guess * 1000));
     } catch (error) {
       console.log(error);
     }
@@ -26,8 +26,11 @@ export const MainContent = ({ currentGame }) => {
 
   return (
     <main>
-      <h2>Today's animal is</h2>
+      <h2>Today's game is</h2>
       <p className="animal-name">{currentGame.animal}</p>
+      <p style={{ fontSize: "medium", marginTop: 0 }}>
+        Ends at {new Date(Number(currentGame.endTime)).toLocaleString()}
+      </p>
       <>
         <div style={{ display: "flex", flexDirection: "column" }}>
           <Animal imageUrl={currentGame.imageUrl} animal={currentGame.animal} />
@@ -44,7 +47,7 @@ export const MainContent = ({ currentGame }) => {
                 <input
                   className="animal-input"
                   type="number"
-                  step="0.1"
+                  step="0.01"
                   min="0"
                   max="100000000"
                   autoComplete="off"
@@ -59,7 +62,7 @@ export const MainContent = ({ currentGame }) => {
               </div>
               <button
                 disabled={buttonDisabled}
-                style={{ marginBottom: "30px" }}
+                style={{ marginBottom: "20px" }}
                 onClick={handleSubmitGuess}
               >
                 {isSubmitting ? "Submitting" : "Make a guess!"}
