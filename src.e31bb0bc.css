@@ -188,7 +188,7 @@ aside footer *:last-child {
 }
 
 .main-container {
-  width: 65vw;
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;

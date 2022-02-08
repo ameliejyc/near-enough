@@ -51668,7 +51668,7 @@ const GameListItem = _ref4 => {
     guess,
     endTime
   } = _ref4;
-  return /*#__PURE__*/_react.default.createElement("li", null, /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement("strong", null, "Ended: ", new Date(Number(endTime)).toLocaleString())), /*#__PURE__*/_react.default.createElement("br", null), /*#__PURE__*/_react.default.createElement("div", null, "Animal: ", animal), /*#__PURE__*/_react.default.createElement("div", null, "Winning guess: ", guess, " kg"), /*#__PURE__*/_react.default.createElement("div", null, "Winner: ", winner), /*#__PURE__*/_react.default.createElement("div", null, "Winnings: ", winnings, " \u24C3"));
+  return /*#__PURE__*/_react.default.createElement("li", null, /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement("strong", null, "Ended: ", new Date(Number(endTime)).toLocaleString())), /*#__PURE__*/_react.default.createElement("br", null), /*#__PURE__*/_react.default.createElement("div", null, "Animal: ", animal), /*#__PURE__*/_react.default.createElement("div", null, "Winning guess: ", guess, " kg"), /*#__PURE__*/_react.default.createElement("div", null, "Winner: ", winner || "No winner"), /*#__PURE__*/_react.default.createElement("div", null, "Winnings: ", (winnings / 10 ** 24).toFixed(1), " \u24C3"));
 };
 },{"react":"../node_modules/react/index.js","big.js":"../node_modules/big.js/big.js","./global.css":"global.css"}],"Animal.js":[function(require,module,exports) {
 "use strict";
@@ -51731,7 +51731,7 @@ const MainContent = _ref => {
 
   const [buttonDisabled, setButtonDisabled] = _react.default.useState(true);
 
-  if (!currentGame) return /*#__PURE__*/_react.default.createElement("p", null, "There are no current games in play! Please come back soon :)");
+  if (!currentGame) return /*#__PURE__*/_react.default.createElement("p", null, "There are no games currently in play! Come back soon :)");
 
   const handleSubmitGuess = async () => {
     setIsSubmitting(true);
@@ -51893,7 +51893,8 @@ function App() {
     gamesHistory: gamesHistory
   }) : null), /*#__PURE__*/_react.default.createElement("div", {
     style: {
-      flexDirection: "column"
+      flexDirection: "column",
+      width: "65vw"
     }
   }, _near.wallet.isSignedIn() && /*#__PURE__*/_react.default.createElement("button", {
     className: "link",
@@ -51967,7 +51968,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "55164" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "56282" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
