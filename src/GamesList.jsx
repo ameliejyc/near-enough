@@ -26,7 +26,7 @@ export const GamesList = ({ gamesHistory }) => {
   );
 };
 
-const GameListItemInProgress = ({ animal, winnings, endTime }) => {
+const GameListItemInProgress = ({ animal, winnings }) => {
   return (
     <li style={{color: "rgb(2, 202, 10)"}}>
       <div>
@@ -49,8 +49,8 @@ const GameListItem = ({ animal, winner, winnings, guess, endTime }) => {
       <br />
       <div>Animal: {animal}</div>
       <div>Winning guess: {guess} kg</div>
-      <div>Winner: {winner}</div>
-      <div>Winnings: {winnings} Ⓝ</div>
+      <div>Winner: {winner || "No winner"}</div>
+      <div>Winnings: {(winnings / (10**24)).toFixed(1)} Ⓝ</div>
     </li>
   );
 };

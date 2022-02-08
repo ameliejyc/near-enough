@@ -66,7 +66,7 @@ export default function App() {
           <GamesList gamesHistory={gamesHistory} />
         ) : null}
       </div>
-      <div style={{ flexDirection: "column" }}>
+      <div style={{ flexDirection: "column", width: "65vw" }}>
         {wallet.isSignedIn() && (
           <button className="link" style={{ float: "right" }} onClick={logout}>
             Sign out

@@ -10,7 +10,7 @@ export const MainContent = ({ currentGame }) => {
   const [buttonDisabled, setButtonDisabled] = React.useState(true);
 
   if (!currentGame)
-    return <p>There are no current games in play! Please come back soon :)</p>;
+    return <p>There are no games currently in play! Come back soon :)</p>;
 
   const handleSubmitGuess = async () => {
     setIsSubmitting(true);

@@ -4,7 +4,7 @@
   "description": "A wisdom of the crowd guessing game",
   "scripts": {
     "dev": "watch -d -n 1 'clear && yarn test'",
-    "test": "asp -f unit.spec",
+    "test": "asp -f index.spec",
     "clean": "rm -rf ./build && rm -rf ./neardev",
     "build:debug": "asb --target debug",
     "build": "asb",

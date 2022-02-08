@@ -1,7 +1,7 @@
-import { VMContext, u128, Context } from "near-sdk-as";
-import { ONE_NEAR } from "../../utils";
+import { VMContext, u128 } from "near-sdk-as";
+import { ONE_NEAR } from "../utils";
 import * as contract from "..";
-import { games, guesses } from "../model";
+import { games, Guess, guesses } from "../model";
 
 const animalIndex = 0;
 const timestamp = 1643472431557; // 2022-01-29T16:07:11.557Z
@@ -122,5 +122,37 @@ describe("deleteGuesses method", () => {
     expect(() => {
       contract.deleteLastGame();
     }).toThrow();
+  });
+});
+
+describe("findClosestGuess function", () => {
+  test("returns correct answers", () => {
+    const guess1 = new Guess(1);
+    const guess2 = new Guess(2);
+    const guess3 = new Guess(3);
+    const guess4 = new Guess(3);
+    const guess5 = new Guess(3);
+    const guess6 = new Guess(3);
+    const guess7 = new Guess(4);
+    const guess8 = new Guess(7);
+    const array = [
+      guess1,
+      guess2,
+      guess3,
+      guess4,
+      guess5,
+      guess6,
+      guess7,
+      guess8,
+    ];
+    const average = <f32>3.25;
+    const winner = contract.findClosestGuess(
+      array,
+      average,
+      0,
+      array.length - 1
+    );
+    log(winner);
+    expect(winner).toStrictEqual(guess3);
   });
 });

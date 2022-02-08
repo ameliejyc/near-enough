@@ -15,7 +15,7 @@ export const DONATION_VALUE = Big(PAY_TO_PLAY)
 const nearConfig = getConfig("development");
 export const CONTRACT_ID =
   process.env.NODE_ENV === "development"
-    ? "dev-1644060009063-98429528712440"
+    ? "dev-1644306586038-28714182473417"
     : "nearenough.testnet";
 
 export const near = new Near({

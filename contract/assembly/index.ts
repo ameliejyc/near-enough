@@ -35,7 +35,7 @@ export function startGame(animalIndex: i32, timestamp: u64): void {
  * NOTE: This is a change method. It will modify state.
  */
 export function deleteLastGame(): void {
-  // assertOwner();
+  assertOwner();
   // Remove the last game from the persistent collection
   games.pop();
 }
@@ -103,9 +103,9 @@ export function getGamesHistory(): Game[] {
 export function getGuesses(): Guess[] {
   assertOwner();
   if (guesses.length < 1) return [];
-  const numGuesses = guesses.length;
-  const result = new Array<Guess>(numGuesses);
-  for (let i = 0; i < numGuesses; i++) {
+  const numberOfGuesses = guesses.length;
+  const result = new Array<Guess>(numberOfGuesses);
+  for (let i = 0; i < numberOfGuesses; i++) {
     result[i] = guesses[i];
   }
   return result;
@@ -159,18 +159,60 @@ export function deleteGuesses(): void {
  */
 function setWinner(): void {
   assertOwner();
-  const numberOfGuesses: number = guesses.length;
+  const numberOfGuesses: i32 = guesses.length;
   // If there were no guesses, return early
   if (numberOfGuesses < 1) return;
-  let guessTotal: number = 0;
+  let guessTotal: i32 = 0;
   for (let a = 0; a < numberOfGuesses; a++) {
     guessTotal += guesses[a].guess;
   }
-  const guessAverage = guessTotal / numberOfGuesses;
-  // TODO: figure out closest guess
-  const winner = guesses[0]; // just set the first guess for now
-  getCurrentGame().setWinner(winner);
+  const average: f32 = f32.div(<f32>guessTotal, <f32>numberOfGuesses);
+  // Create new guesses array
+  const guessesCopy = new Array<Guess>(numberOfGuesses);
+  for (let i = 0; i < numberOfGuesses; i++) {
+    guessesCopy[i] = guesses[i];
+  }
+  // Sort the guesses array
+  const sortedGuesses = guessesCopy.sort((a, b) => {
+    return a.guess - b.guess;
+  });
+  // Use divide and conquer function
+  const winningGuess = findClosestGuess(
+    sortedGuesses,
+    average,
+    0,
+    numberOfGuesses - 1
+  );
+  let winner = winningGuess;
+  // Return the first winner in the original guess array in case there are multiple winners
+  for (let a = 0; a < numberOfGuesses; a++) {
+    if (guesses[a].guess === winningGuess.guess) {
+      winner = guesses[a];
+      break;
+    }
+  }
+  const currentGame = getCurrentGame();
+  currentGame.setWinner(winner);
+  games.replace(games.length - 1, currentGame);
   sendWinnerWinnings();
+}
+
+export function findClosestGuess(
+  array: Guess[],
+  value: f32,
+  start: i32,
+  end: i32
+): Guess {
+  if (start > end) {
+    if (value - <f32>array[end].guess < <f32>array[start].guess - value) {
+      return array[end];
+    } else return array[start];
+  }
+  let mid = <i32>Math.floor((start + end) / 2);
+  if (<f32>array[mid].guess === value) return array[mid];
+  if (<f32>array[mid].guess > value)
+    return findClosestGuess(array, value, start, mid - 1);
+  else return findClosestGuess(array, value, mid + 1, end);
 }
 
 /**
@@ -186,23 +228,16 @@ function sendWinnerWinnings(): void {
   );
 
   // Transfer earnings to owner then confirm transfer complete
-  const toWinner = ContractPromiseBatch.create(currentGame.winnerAccount);
-  const promise = toWinner.transfer(currentGame.winnings.total);
-  promise
-    .then(Context.contractName)
-    .function_call("onTransferComplete", "{}", u128.Zero, XCC_GAS);
+  ContractPromiseBatch.create(currentGame.winnerAccount).transfer(
+    currentGame.winnings.total
+  );
+  logging.log(`Transfer to ${currentGame.winnerAccount} is complete`);
+
+  // Reset winnings tracker
+  currentGame.winnings.recordTransfer();
 
   // Replace the current game with the updated game
   games.replace(currentGameIndex, currentGame);
-}
-
-function onTransferComplete(): void {
-  assertOwner();
-  assert_single_promise_success();
-  logging.log("Transfer to winner is complete");
-
-  // Reset winnings tracker
-  getCurrentGame().winnings.recordTransfer();
 }
 
 function assertFinancialSafety(deposit: u128): void {
