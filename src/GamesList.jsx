@@ -1,4 +1,5 @@
 import React from "react";
+import Big from "big.js";
 import "./global.css";
 
 export const GamesList = ({ gamesHistory }) => {
@@ -8,7 +9,7 @@ export const GamesList = ({ gamesHistory }) => {
       {reversedGamesHistory.map(
         ({ animal, winnerAccount, winnings, winnerGuess, endTime }) => {
           if (Date.now() < endTime) {
-            return <GameListItemInProgress animal={animal} endTime={endTime} />;
+            return <GameListItemInProgress animal={animal} endTime={endTime} winnings={winnings}/>;
           } else
             return (
               <GameListItem
@@ -34,7 +35,7 @@ const GameListItemInProgress = ({ animal, winnings, endTime }) => {
         </strong>
       </div>
       <div>Animal: {animal}</div>
-      <div>Current winnings: {winnings} Ⓝ</div>
+      <div>Current winnings: {(winnings.total / (10**24)).toFixed(1)} Ⓝ</div>
     </li>
   );
 };

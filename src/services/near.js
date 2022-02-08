@@ -49,13 +49,6 @@ export const getGamesHistory = async () => {
   return await wallet.account().viewFunction(CONTRACT_ID, "getGamesHistory");
 };
 
-//function to get bool value  has  lottery played or  no
-export const getHasPlayed = (accountId) => {
-  return wallet
-    .account()
-    .viewFunction(CONTRACT_ID, "get_has_played", { player: accountId });
-};
-
 export const getCurrentGame = async () => {
   return await wallet.account().viewFunction(CONTRACT_ID, "getCurrentGame");
 };
