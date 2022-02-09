@@ -50325,7 +50325,7 @@ __exportStar(require("./browser-connect"), exports);
 require("error-polyfill");
 
 },{"./key_stores/browser-index":"../node_modules/near-api-js/lib/key_stores/browser-index.js","./common-index":"../node_modules/near-api-js/lib/common-index.js","./browser-connect":"../node_modules/near-api-js/lib/browser-connect.js","error-polyfill":"../node_modules/error-polyfill/index.js"}],"config.js":[function(require,module,exports) {
-const CONTRACT_NAME = "dev-1644306586038-28714182473417" || "nearenough.testnet";
+const CONTRACT_NAME = "dev-1644306586038-28714182473417" || "near-enough.testnet";
 
 function getConfig(env) {
   switch (env) {
@@ -51453,7 +51453,7 @@ exports.BOATLOAD_OF_GAS = BOATLOAD_OF_GAS;
 const DONATION_VALUE = (0, _big.default)(PAY_TO_PLAY).times(10 ** 24).toFixed();
 exports.DONATION_VALUE = DONATION_VALUE;
 const nearConfig = (0, _config.default)("development");
-const CONTRACT_ID = "development" === "development" ? "dev-1644306586038-28714182473417" : "nearenough.testnet";
+const CONTRACT_ID = "development" === "development" ? "dev-1644306586038-28714182473417" : "near-enough.testnet";
 exports.CONTRACT_ID = CONTRACT_ID;
 const near = new _nearApiJs.Near({
   networkId: nearConfig.networkId,
@@ -51968,7 +51968,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "56282" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "57762" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
