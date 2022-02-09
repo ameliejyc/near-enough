@@ -48,7 +48,7 @@ const GameListItem = ({ animal, winner, winnings, guess, endTime }) => {
       </div>
       <br />
       <div>Animal: {animal}</div>
-      <div>Winning guess: {`${guess} kg` || "No guesses"} </div>
+      <div>Winning guess: {guess ? `${guess} kg` : "No guesses"}</div>
       <div>Winner: {winner || "No winner"}</div>
       <div>Winnings: {(winnings / (10**24)).toFixed(1)} Ⓝ</div>
     </li>
