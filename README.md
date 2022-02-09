@@ -1,4 +1,4 @@
-# [NEAR enough](ameliejyc.github.io/near-enough) - a wisdom of the crowd guessing game!
+# [NEAR enough](https://ameliejyc.github.io/near-enough) - a wisdom of the crowd guessing game!
 
 This README is for the front end React code. Check out the README in `./contract` for the contract AssemblyScript code.
 
