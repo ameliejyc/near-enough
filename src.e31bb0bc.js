@@ -51668,9 +51668,9 @@ const GameListItem = _ref4 => {
     guess,
     endTime
   } = _ref4;
-  return /*#__PURE__*/_react.default.createElement("li", null, /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement("strong", null, "Ended: ", new Date(Number(endTime)).toLocaleString())), /*#__PURE__*/_react.default.createElement("br", null), /*#__PURE__*/_react.default.createElement("div", null, "Animal: ", animal), /*#__PURE__*/_react.default.createElement("div", null, "Winning guess: ", guess, " kg"), /*#__PURE__*/_react.default.createElement("div", null, "Winner: ", winner || "No winner"), /*#__PURE__*/_react.default.createElement("div", null, "Winnings: ", (winnings / 10 ** 24).toFixed(1), " \u24C3"));
+  return /*#__PURE__*/_react.default.createElement("li", null, /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement("strong", null, "Ended: ", new Date(Number(endTime)).toLocaleString())), /*#__PURE__*/_react.default.createElement("br", null), /*#__PURE__*/_react.default.createElement("div", null, "Animal: ", animal), /*#__PURE__*/_react.default.createElement("div", null, "Winning guess: ", `${guess} kg` || "No guesses", " "), /*#__PURE__*/_react.default.createElement("div", null, "Winner: ", winner || "No winner"), /*#__PURE__*/_react.default.createElement("div", null, "Winnings: ", (winnings / 10 ** 24).toFixed(1), " \u24C3"));
 };
-},{"react":"../node_modules/react/index.js","big.js":"../node_modules/big.js/big.js","./global.css":"global.css"}],"Animal.js":[function(require,module,exports) {
+},{"react":"../node_modules/react/index.js","big.js":"../node_modules/big.js/big.js","./global.css":"global.css"}],"Animal.jsx":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -51700,7 +51700,7 @@ const Animal = _ref => {
 };
 
 exports.Animal = Animal;
-},{"react":"../node_modules/react/index.js","./global.css":"global.css"}],"MainContent.js":[function(require,module,exports) {
+},{"react":"../node_modules/react/index.js","./global.css":"global.css"}],"MainContent.jsx":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -51797,7 +51797,7 @@ const MainContent = _ref => {
 };
 
 exports.MainContent = MainContent;
-},{"regenerator-runtime/runtime":"../node_modules/regenerator-runtime/runtime.js","react":"../node_modules/react/index.js","./services/near":"services/near.js","./global.css":"global.css","./Animal":"Animal.js"}],"GameInfo.js":[function(require,module,exports) {
+},{"regenerator-runtime/runtime":"../node_modules/regenerator-runtime/runtime.js","react":"../node_modules/react/index.js","./services/near":"services/near.js","./global.css":"global.css","./Animal":"Animal.jsx"}],"GameInfo.jsx":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -51814,7 +51814,7 @@ const GameInfo = () => {
 };
 
 exports.GameInfo = GameInfo;
-},{"react":"../node_modules/react/index.js"}],"App.js":[function(require,module,exports) {
+},{"react":"../node_modules/react/index.js"}],"App.jsx":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -51928,7 +51928,7 @@ function Notification() {
     href: `${urlPrefix}/${window.contract.contractId}`
   }, window.contract.contractId), /*#__PURE__*/_react.default.createElement("footer", null, /*#__PURE__*/_react.default.createElement("div", null, "\u2714 Succeeded"), /*#__PURE__*/_react.default.createElement("div", null, "Just now")));
 }
-},{"regenerator-runtime/runtime":"../node_modules/regenerator-runtime/runtime.js","react":"../node_modules/react/index.js","./services/near":"services/near.js","./global.css":"global.css","./GamesList":"GamesList.jsx","./MainContent":"MainContent.js","./GameInfo":"GameInfo.js","./config":"config.js"}],"index.js":[function(require,module,exports) {
+},{"regenerator-runtime/runtime":"../node_modules/regenerator-runtime/runtime.js","react":"../node_modules/react/index.js","./services/near":"services/near.js","./global.css":"global.css","./GamesList":"GamesList.jsx","./MainContent":"MainContent.jsx","./GameInfo":"GameInfo.jsx","./config":"config.js"}],"index.js":[function(require,module,exports) {
 "use strict";
 
 var _react = _interopRequireDefault(require("react"));
@@ -51940,7 +51940,7 @@ var _App = _interopRequireDefault(require("./App"));
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 _reactDom.default.render( /*#__PURE__*/_react.default.createElement(_App.default, null), document.querySelector("#root"));
-},{"react":"../node_modules/react/index.js","react-dom":"../node_modules/react-dom/index.js","./App":"App.js"}],"../node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{"react":"../node_modules/react/index.js","react-dom":"../node_modules/react-dom/index.js","./App":"App.jsx"}],"../node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -51968,7 +51968,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "57762" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "58108" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
