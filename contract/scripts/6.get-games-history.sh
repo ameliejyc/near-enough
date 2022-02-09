@@ -5,6 +5,6 @@ echo "Call getGamesHistory function on the contract"
 echo ---------------------------------------------------------
 echo
 
-near view nearenough.testnet getGamesHistory
+near view near-enough.testnet getGamesHistory
 
 exit 0

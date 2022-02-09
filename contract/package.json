@@ -9,7 +9,7 @@
     "build:debug": "asb --target debug",
     "build": "asb",
     "asp": "asp --verbose --nologo",
-    "deploy": "yarn build:release && near deploy 'nearenough.testnet' ./build/release/nearenough.wasm"
+    "deploy": "yarn build && near deploy 'near-enough.testnet' ./build/release/near-enough.wasm"
   },
   "keywords": [],
   "author": "ameliejyc",

@@ -75,4 +75,4 @@ export class WinningsTracker {
 }
 
 export const games = new PersistentVector<Game>("g");
-export const guesses = new PersistentVector<Guess>("h");
+export const guesses = new PersistentVector<Guess>("i");

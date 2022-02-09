@@ -17,8 +17,10 @@ It uses the following setup:
 
 ### Terminal **A**
 
-*This window is used to compile, deploy and control the contract*
+_This window is used to compile, deploy and control the contract_
+
 - Environment
+
   ```sh
   export CONTRACT=        # depends on deployment
   export OWNER=           # any account you control
@@ -31,6 +33,7 @@ It uses the following setup:
 - Commands
 
   _helper scripts_
+
   ```sh
   1.dev-deploy.sh                # helper: build and deploy contracts
   2.use-contract.sh              # helper: call methods on ContractPromise
@@ -39,8 +42,10 @@ It uses the following setup:
 
 ### Terminal **B**
 
-*This window is used to render the contract account storage*
+_This window is used to render the contract account storage_
+
 - Environment
+
   ```sh
   export CONTRACT=               # depends on deployment
 
@@ -54,6 +59,7 @@ It uses the following setup:
   # https://github.com/near-examples/near-account-utils
   watch -d -n 1 yarn storage $CONTRACT
   ```
+
 ---
 
 ## OS Support

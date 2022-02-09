@@ -16,7 +16,7 @@ const nearConfig = getConfig("development");
 export const CONTRACT_ID =
   process.env.NODE_ENV === "development"
     ? "dev-1644306586038-28714182473417"
-    : "nearenough.testnet";
+    : "near-enough.testnet";
 
 export const near = new Near({
   networkId: nearConfig.networkId,

@@ -1,6 +1,34 @@
-# Near enough
+# [NEAR enough](ameliejyc.github.io/near-enough) - a wisdom of the crowd guessing game!
 
-This [React] app was initialized with [create-near-app]
+This README is for the front end React code. Check out the README in `./contract` for the contract AssemblyScript code.
+
+# What is it?
+
+NEAR enough is a personal project made to practice building smart contracts in AssemblyScript, exposing methods through a front end, transferring NEAR and developing experience with NEAR build processes.
+
+# How is it made?
+
+I started building the contract using [near-sdk-as Starter Kit](https://github.com/Learn-NEAR/starter--near-sdk-as). After that I took some parts from a [create-near-app] to bootstrap a front end quickly. The whole thing was very fun.
+
+# Todo
+
+- I had problems with AssemblyScript number types. Specifically generating dates and random numbers. As a result I pass these values from JS to the contract (e.g. in `makeGuess`) as it was giving me less grief than doing it in AS, but I would like to refactor this in future.
+- Currently starting and ending games is a manual process made by the contract owner. I would like this to be automated, e.g. games start and end at certain times every week. I have no idea how to do this yet.
+- I'm not accounting for transaction fees properly in the end game when I transfer winnings to the winner. I need to investigate more how I should be covering my costs.
+- Add some kind of success messaging when a guess is successfully submitted.
+- Convert JS to TS. Should have done this from the start but I was too eager to see things working.
+- Write more contract unit tests, plus integ tests and UI tests.
+
+# Learnings
+
+- I deployed to testnet server but GitHub thought it was mainline due to the config.js setup, so I amended according to [this](https://stackoverflow.com/questions/69952774/reactjs-not-call-method-from-smart-contract-near-on-product-testnet-does-not).
+- I am still getting used to the development environent but so far I think this:
+  - Having scripts run method calls seems more effort up front, but pays off in the long run to not have to write things out on the command line.
+  - Think carefully up front about types in the contract model. Changing the types after already having items in storage may lead to a lot of errors.
+
+The rest of the README contains helpful setup notes from [create-near-app].
+
+---
 
 # Quick Start
 
@@ -42,7 +70,7 @@ Ensure that it's installed with `near --version` (or `npx near --version`)
 
 ## Step 1: Create an account for the contract
 
-Each account on NEAR can have at most one contract deployed to it. If you've already created an account such as `your-name.testnet`, you can deploy your contract to `nearenough.your-name.testnet`. Assuming you've already created an account on [NEAR Wallet], here's how to create `nearenough.your-name.testnet`:
+Each account on NEAR can have at most one contract deployed to it. If you've already created an account such as `your-name.testnet`, you can deploy your contract to `near-enough.your-name.testnet`. Assuming you've already created an account on [NEAR Wallet], here's how to create `near-enough.your-name.testnet`:
 
 1. Authorize NEAR CLI, following the commands it gives you:
 
@@ -50,13 +78,13 @@ Each account on NEAR can have at most one contract deployed to it. If you've alr
 
 2. Create a subaccount (replace `YOUR-NAME` below with your actual account name):
 
-   near create-account nearenough.YOUR-NAME.testnet --masterAccount YOUR-NAME.testnet
+   near create-account near-enough.YOUR-NAME.testnet --masterAccount YOUR-NAME.testnet
 
 ## Step 2: set contract name in code
 
 Modify the line in `src/config.js` that sets the account name of the contract. Set it to the account id you used above.
 
-    const CONTRACT_NAME = process.env.CONTRACT_NAME || 'nearenough.YOUR-NAME.testnet'
+    const CONTRACT_NAME = process.env.CONTRACT_NAME || 'near-enough.YOUR-NAME.testnet'
 
 ## Step 3: deploy!
 
@@ -68,10 +96,6 @@ As you can see in `package.json`, this does two things:
 
 1. builds & deploys smart contract to NEAR TestNet
 2. builds & deploys frontend code to GitHub using [gh-pages]. This will only work if the project already has a repository set up on GitHub. Feel free to modify the `deploy` script in `package.json` to deploy elsewhere.
-
-# Troubleshooting
-
-On Windows, if you're seeing an error containing `EPERM` it may be related to spaces in your path. Please see [this issue](https://github.com/zkat/npx/issues/209) for more details.
 
 [react]: https://reactjs.org/
 [create-near-app]: https://github.com/near/create-near-app

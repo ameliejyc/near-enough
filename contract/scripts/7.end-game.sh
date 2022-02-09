@@ -5,6 +5,6 @@ echo "Call endGame function on the contract"
 echo ---------------------------------------------------------
 echo
 
-near call $CONTRACT endGame --accountId nearenough.testnet
+near call $CONTRACT endGame --accountId near-enough.testnet
 
 exit 0

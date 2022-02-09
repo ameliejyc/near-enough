@@ -1,14 +1,6 @@
-# Near enough - a wisdom of the crowd guessing game!
+# NEAR enough
 
-## Rules of the game
-
-WIP
-
-## Todos
-
-- Currently the timestamp is passed into the `makeGuess` call because it was easier than figuring our AS date stuff. Someone calling the contract could give an incorrect time that still gets accepted and pollutes the guesses array. So I need to figure out the right way to set a timestamp on a `makeGuess` call in AS.
-
----
+TODO: add method documentation?
 
 # Exploring The Code
 
