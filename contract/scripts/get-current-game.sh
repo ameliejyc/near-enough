@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 echo
 echo ---------------------------------------------------------
-echo "Call endGame function on the contract"
+echo "Call getCurrentGame function on the contract"
 echo ---------------------------------------------------------
 echo
 
-near call $CONTRACT endGame --accountId near-enough.testnet
+near view $CONTRACT getCurrentGame --accountId $CONTRACT
 
 exit 0

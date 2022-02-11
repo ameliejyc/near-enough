@@ -33,7 +33,6 @@ export class Game {
   winnerAccount: string;
   winnerGuess: i32;
   winnings: WinningsTracker = new WinningsTracker();
-  // currently passing animalIndex and endTime from the frontend to avoid incomprehensible issues in AS
   constructor(animalIndex: i32, timestamp: u64) {
     this.wallet = context.sender;
     this.animal = animals[animalIndex];

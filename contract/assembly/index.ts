@@ -3,7 +3,6 @@ import {
   logging,
   u128,
   ContractPromiseBatch,
-  storage,
 } from "near-sdk-as";
 import { Game, games, Guess, guesses } from "./model";
 import { ONE_NEAR } from "./utils";
@@ -44,6 +43,7 @@ export function deleteLastGame(): void {
   assertOwner();
   // Remove the last game from the persistent collection
   games.pop();
+  logging.log("Last game deleted")
 }
 
 /**
@@ -134,6 +134,7 @@ export function endGame(): void {
   assertOwner();
   setWinner();
   deleteGuesses();
+  logging.log("Game ended")
 }
 
 /**
@@ -154,6 +155,7 @@ export function deleteGuesses(): void {
   while (guesses.length > 0) {
     guesses.pop();
   }
+  logging.log("All guesses deleted")
 }
 
 /***********************************************
@@ -200,6 +202,7 @@ function setWinner(): void {
   const currentGame = getCurrentGame();
   currentGame.setWinner(winner);
   games.replace(games.length - 1, currentGame);
+  logging.log("Winner is set. Next: transferring winnings.")
   sendWinnerWinnings();
 }
 

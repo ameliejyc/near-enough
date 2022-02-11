@@ -1,20 +1,31 @@
 # [NEAR enough](https://ameliejyc.github.io/near-enough) - a wisdom of the crowd guessing game!
 
-This README is for the front end React code. Check out the README in `./contract` for the contract AssemblyScript code.
+This README is for the front end React code. Check out the README in `./contract` to learn more about the contract methods.
 
 # What is it?
 
-NEAR enough is a personal project made to practice building smart contracts in AssemblyScript, exposing methods through a front end, transferring NEAR and developing experience with NEAR build processes.
+NEAR enough is a personal project made to help me learn how to:
+
+- build smart contracts in AssemblyScript
+- expose contract methods through a front end
+- transfer NEAR
+- develop experience with NEAR
+
+It was built for the NEAR bootcamp Jan 2021.
 
 # How is it made?
 
 I started building the contract using [near-sdk-as Starter Kit](https://github.com/Learn-NEAR/starter--near-sdk-as). After that I took some parts from a [create-near-app] to bootstrap a front end quickly. The whole thing was very fun.
 
+# What does it do?
+
+It's a game where participants guess the weight of an animal. They pay 0.1 NEAR for the luxury. All guesses are stored and the average is calculated at the end of the game. The winner is the closest to the average, and receives all the money in the pool.
+
 # Todo
 
 - I had problems with AssemblyScript number types. Specifically generating dates and random numbers. As a result I pass these values from JS to the contract (e.g. in `makeGuess`) as it was giving me less grief than doing it in AS, but I would like to refactor this in future.
-- Currently starting and ending games is a manual process made by the contract owner. I would like this to be automated, e.g. games start and end at certain times every week. I have no idea how to do this yet.
-- I'm not accounting for transaction fees properly in the end game when I transfer winnings to the winner. I need to investigate more how I should be covering my costs.
+- Currently starting and ending games is a manual process made by the contract owner. I would like this to be automated, e.g. games start and end at certain times every week. I have no idea how to do this.
+- I'm not accounting for transaction fees properly in the end game when I transfer winnings to the winner. I need to investigate more how I should be covering costs.
 - Add some kind of success messaging when a guess is successfully submitted.
 - Convert JS to TS. Should have done this from the start but I was too eager to see things working.
 - Write more contract unit tests, plus integ tests and UI tests.
@@ -22,11 +33,14 @@ I started building the contract using [near-sdk-as Starter Kit](https://github.c
 # Learnings
 
 - I deployed to testnet server but GitHub thought it was mainline due to the config.js setup, so I amended according to [this](https://stackoverflow.com/questions/69952774/reactjs-not-call-method-from-smart-contract-near-on-product-testnet-does-not).
-- I am still getting used to the development environent but so far I think this:
+- JavaScript numbers and AssemblyScript numbers are totally different beasts and I still have a lot of work to do to get familiar with AS numbers.
+- I am getting used to the development environent but so far I think this:
   - Having scripts run method calls seems more effort up front, but pays off in the long run to not have to write things out on the command line.
-  - Think carefully up front about types in the contract model. Changing the types after already having items in storage may lead to a lot of errors.
+  - Think carefully up front about types in the contract model. Changing the types after already having items in storage may lead to a lot of type errors.
 
-The rest of the README contains helpful setup notes from [create-near-app].
+---
+
+The remainder of this README contains helpful setup notes from [create-near-app].
 
 ---
 
