@@ -50325,7 +50325,7 @@ __exportStar(require("./browser-connect"), exports);
 require("error-polyfill");
 
 },{"./key_stores/browser-index":"../node_modules/near-api-js/lib/key_stores/browser-index.js","./common-index":"../node_modules/near-api-js/lib/common-index.js","./browser-connect":"../node_modules/near-api-js/lib/browser-connect.js","error-polyfill":"../node_modules/error-polyfill/index.js"}],"config.js":[function(require,module,exports) {
-const CONTRACT_NAME = "dev-1644306586038-28714182473417" || "near-enough.testnet";
+const CONTRACT_NAME = "dev-1644656678232-84445371712705" || "near-enough.testnet";
 
 function getConfig(env) {
   switch (env) {
@@ -50365,7 +50365,7 @@ function getConfig(env) {
       return {
         networkId: "local",
         nodeUrl: "http://localhost:3030",
-        keyPath: `${"/Users/amelie"}/.near/validator_key.json`,
+        keyPath: `${"/Users/amechan"}/.near/validator_key.json`,
         walletUrl: "http://localhost:4000/wallet",
         contractName: CONTRACT_NAME
       };
@@ -51453,7 +51453,7 @@ exports.BOATLOAD_OF_GAS = BOATLOAD_OF_GAS;
 const DONATION_VALUE = (0, _big.default)(PAY_TO_PLAY).times(10 ** 24).toFixed();
 exports.DONATION_VALUE = DONATION_VALUE;
 const nearConfig = (0, _config.default)("development");
-const CONTRACT_ID = "development" === "development" ? "dev-1644306586038-28714182473417" : "near-enough.testnet";
+const CONTRACT_ID = "development" === "development" ? "dev-1644656678232-84445371712705" : "near-enough.testnet";
 exports.CONTRACT_ID = CONTRACT_ID;
 const near = new _nearApiJs.Near({
   networkId: nearConfig.networkId,
@@ -51668,7 +51668,7 @@ const GameListItem = _ref4 => {
     guess,
     endTime
   } = _ref4;
-  return /*#__PURE__*/_react.default.createElement("li", null, /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement("strong", null, "Ended: ", new Date(Number(endTime)).toLocaleString())), /*#__PURE__*/_react.default.createElement("br", null), /*#__PURE__*/_react.default.createElement("div", null, "Animal: ", animal), /*#__PURE__*/_react.default.createElement("div", null, "Winning guess: ", `${guess} kg` || "No guesses", " "), /*#__PURE__*/_react.default.createElement("div", null, "Winner: ", winner || "No winner"), /*#__PURE__*/_react.default.createElement("div", null, "Winnings: ", (winnings / 10 ** 24).toFixed(1), " \u24C3"));
+  return /*#__PURE__*/_react.default.createElement("li", null, /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement("strong", null, "Ended: ", new Date(Number(endTime)).toLocaleString())), /*#__PURE__*/_react.default.createElement("br", null), /*#__PURE__*/_react.default.createElement("div", null, "Animal: ", animal), /*#__PURE__*/_react.default.createElement("div", null, "Winning guess: ", guess ? `${guess} kg` : "No guesses"), /*#__PURE__*/_react.default.createElement("div", null, "Winner: ", winner || "No winner"), /*#__PURE__*/_react.default.createElement("div", null, "Winnings: ", (winnings / 10 ** 24).toFixed(1), " \u24C3"));
 };
 },{"react":"../node_modules/react/index.js","big.js":"../node_modules/big.js/big.js","./global.css":"global.css"}],"Animal.jsx":[function(require,module,exports) {
 "use strict";
@@ -51968,7 +51968,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "58108" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "65486" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
