@@ -50325,7 +50325,7 @@ __exportStar(require("./browser-connect"), exports);
 require("error-polyfill");
 
 },{"./key_stores/browser-index":"../node_modules/near-api-js/lib/key_stores/browser-index.js","./common-index":"../node_modules/near-api-js/lib/common-index.js","./browser-connect":"../node_modules/near-api-js/lib/browser-connect.js","error-polyfill":"../node_modules/error-polyfill/index.js"}],"config.js":[function(require,module,exports) {
-const CONTRACT_NAME = "dev-1644656678232-84445371712705" || "near-enough.testnet";
+const CONTRACT_NAME = "dev-1644306586038-28714182473417" || "near-enough.testnet";
 
 function getConfig(env) {
   switch (env) {
@@ -50365,7 +50365,7 @@ function getConfig(env) {
       return {
         networkId: "local",
         nodeUrl: "http://localhost:3030",
-        keyPath: `${"/Users/amechan"}/.near/validator_key.json`,
+        keyPath: `${"/Users/amelie"}/.near/validator_key.json`,
         walletUrl: "http://localhost:4000/wallet",
         contractName: CONTRACT_NAME
       };
@@ -51434,7 +51434,7 @@ var define;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.getGamesHistory = exports.getCurrentGame = exports.accountId = exports.DONATION_VALUE = exports.CONTRACT_ID = exports.BOATLOAD_OF_GAS = void 0;
+exports.getGamesHistory = exports.getCurrentGame = exports.endGame = exports.accountId = exports.DONATION_VALUE = exports.CONTRACT_ID = exports.BOATLOAD_OF_GAS = void 0;
 exports.login = login;
 exports.logout = logout;
 exports.wallet = exports.startGame = exports.near = exports.makeGuess = void 0;
@@ -51453,7 +51453,7 @@ exports.BOATLOAD_OF_GAS = BOATLOAD_OF_GAS;
 const DONATION_VALUE = (0, _big.default)(PAY_TO_PLAY).times(10 ** 24).toFixed();
 exports.DONATION_VALUE = DONATION_VALUE;
 const nearConfig = (0, _config.default)("development");
-const CONTRACT_ID = "development" === "development" ? "dev-1644656678232-84445371712705" : "near-enough.testnet";
+const CONTRACT_ID = "development" === "development" ? "dev-1644306586038-28714182473417" : "near-enough.testnet";
 exports.CONTRACT_ID = CONTRACT_ID;
 const near = new _nearApiJs.Near({
   networkId: nearConfig.networkId,
@@ -51512,6 +51512,19 @@ const startGame = async index => {
 };
 
 exports.startGame = startGame;
+
+const endGame = async index => {
+  let response = await wallet.account().functionCall({
+    contractId: CONTRACT_ID,
+    methodName: "endGame",
+    args: {
+      accountId: CONTRACT_ID
+    }
+  });
+  console.log(response);
+};
+
+exports.endGame = endGame;
 
 const makeGuess = async value => {
   let response = await wallet.account().functionCall({
@@ -51793,7 +51806,7 @@ const MainContent = _ref => {
       marginBottom: "20px"
     },
     title: "Each transaction costs 0.1 NEAR Tokens"
-  }, "Each guess requires a 0.1 \u24C3 deposit.", _near.wallet.isSignedIn && /*#__PURE__*/_react.default.createElement("span", null, " You are logged in as ", _near.accountId, "."))))));
+  }, "Each guess requires a 0.1 \u24C3 deposit.You are logged in as", " ", _near.accountId, ".")))));
 };
 
 exports.MainContent = MainContent;
@@ -51814,7 +51827,84 @@ const GameInfo = () => {
 };
 
 exports.GameInfo = GameInfo;
-},{"react":"../node_modules/react/index.js"}],"App.jsx":[function(require,module,exports) {
+},{"react":"../node_modules/react/index.js"}],"OwnerActions.jsx":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.OwnerActions = void 0;
+
+require("regenerator-runtime/runtime");
+
+var _react = _interopRequireWildcard(require("react"));
+
+require("./global.css");
+
+var _near = require("./services/near");
+
+function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
+
+function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+
+const OwnerActions = () => {
+  const [index, setIndex] = (0, _react.useState)(0);
+  const [isStarting, setIsStarting] = (0, _react.useState)(false);
+  const [isEnding, setIsEnding] = (0, _react.useState)(false);
+
+  const handleStartGame = async () => {
+    setIsStarting(true);
+
+    try {
+      await (0, _near.startGame)(index);
+    } catch (error) {
+      console.log(error);
+    }
+
+    setIsStarting(false);
+  };
+
+  const handleEndGame = async () => {
+    setIsEnding(true);
+
+    try {
+      await (0, _near.endGame)();
+    } catch (error) {
+      console.log(error);
+    }
+
+    setIsEnding(false);
+  };
+
+  return /*#__PURE__*/_react.default.createElement(_react.default.Fragment, null, /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement("label", {
+    htmlFor: "start-game"
+  }, "Pick an animal index to start a new game"), /*#__PURE__*/_react.default.createElement("input", {
+    className: "animal-input",
+    type: "number",
+    step: "1",
+    min: "0",
+    max: "8",
+    autoComplete: "off",
+    id: "start-game",
+    value: index,
+    onChange: e => {
+      setIndex(e.target.value);
+    }
+  })), /*#__PURE__*/_react.default.createElement("button", {
+    style: {
+      marginBottom: "20px"
+    },
+    onClick: handleStartGame
+  }, isStarting ? "Starting" : "Start a new game!"), /*#__PURE__*/_react.default.createElement("button", {
+    style: {
+      marginBottom: "20px"
+    },
+    onClick: handleEndGame
+  }, isEnding ? "Ending" : "End the current game"));
+};
+
+exports.OwnerActions = OwnerActions;
+},{"regenerator-runtime/runtime":"../node_modules/regenerator-runtime/runtime.js","react":"../node_modules/react/index.js","./global.css":"global.css","./services/near":"services/near.js"}],"App.jsx":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -51835,6 +51925,8 @@ var _GamesList = require("./GamesList");
 var _MainContent = require("./MainContent");
 
 var _GameInfo = require("./GameInfo");
+
+var _OwnerActions = require("./OwnerActions");
 
 var _config = _interopRequireDefault(require("./config"));
 
@@ -51910,7 +52002,7 @@ function App() {
   }) : /*#__PURE__*/_react.default.createElement(_GameInfo.GameInfo, null), /*#__PURE__*/_react.default.createElement("button", {
     className: "link",
     onClick: () => setShowMainContent(!showMainContent)
-  }, showMainContent ? "What is NEAR enough?" : "Let's play"), showNotification && /*#__PURE__*/_react.default.createElement(Notification, null))));
+  }, showMainContent ? "What is NEAR enough?" : "Let's play"), _near.accountId === _near.CONTRACT_ID ? /*#__PURE__*/_react.default.createElement(_OwnerActions.OwnerActions, null) : null, showNotification && /*#__PURE__*/_react.default.createElement(Notification, null))));
 } // this component gets rendered by App after the form is submitted
 
 
@@ -51928,7 +52020,7 @@ function Notification() {
     href: `${urlPrefix}/${window.contract.contractId}`
   }, window.contract.contractId), /*#__PURE__*/_react.default.createElement("footer", null, /*#__PURE__*/_react.default.createElement("div", null, "\u2714 Succeeded"), /*#__PURE__*/_react.default.createElement("div", null, "Just now")));
 }
-},{"regenerator-runtime/runtime":"../node_modules/regenerator-runtime/runtime.js","react":"../node_modules/react/index.js","./services/near":"services/near.js","./global.css":"global.css","./GamesList":"GamesList.jsx","./MainContent":"MainContent.jsx","./GameInfo":"GameInfo.jsx","./config":"config.js"}],"index.js":[function(require,module,exports) {
+},{"regenerator-runtime/runtime":"../node_modules/regenerator-runtime/runtime.js","react":"../node_modules/react/index.js","./services/near":"services/near.js","./global.css":"global.css","./GamesList":"GamesList.jsx","./MainContent":"MainContent.jsx","./GameInfo":"GameInfo.jsx","./OwnerActions":"OwnerActions.jsx","./config":"config.js"}],"index.js":[function(require,module,exports) {
 "use strict";
 
 var _react = _interopRequireDefault(require("react"));
@@ -51968,7 +52060,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "65486" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "49784" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
