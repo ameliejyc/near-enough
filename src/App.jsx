@@ -7,11 +7,13 @@ import {
   getGamesHistory,
   getCurrentGame,
   accountId,
+  CONTRACT_ID,
 } from "./services/near";
 import "./global.css";
 import { GamesList } from "./GamesList";
 import { MainContent } from "./MainContent";
 import { GameInfo } from "./GameInfo";
+import { OwnerActions } from "./OwnerActions";
 
 import getConfig from "./config";
 const { networkId } = getConfig(process.env.NODE_ENV || "development");
@@ -87,6 +89,7 @@ export default function App() {
           >
             {showMainContent ? "What is NEAR enough?" : "Let's play"}
           </button>
+          {accountId === CONTRACT_ID ? <OwnerActions /> : null}
           {showNotification && <Notification />}
         </div>
       </div>

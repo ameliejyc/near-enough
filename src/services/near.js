@@ -70,6 +70,17 @@ export const startGame = async (index) => {
   console.log(response);
 };
 
+export const endGame = async (index) => {
+  let response = await wallet.account().functionCall({
+    contractId: CONTRACT_ID,
+    methodName: "endGame",
+    args: {
+      accountId: CONTRACT_ID,
+    },
+  });
+  console.log(response);
+};
+
 export const makeGuess = async (value) => {
   let response = await wallet.account().functionCall({
     contractId: CONTRACT_ID,

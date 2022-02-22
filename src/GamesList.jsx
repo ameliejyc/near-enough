@@ -1,5 +1,4 @@
 import React from "react";
-import Big from "big.js";
 import "./global.css";
 
 export const GamesList = ({ gamesHistory }) => {
@@ -9,7 +8,13 @@ export const GamesList = ({ gamesHistory }) => {
       {reversedGamesHistory.map(
         ({ animal, winnerAccount, winnings, winnerGuess, endTime }) => {
           if (Date.now() < endTime) {
-            return <GameListItemInProgress animal={animal} endTime={endTime} winnings={winnings}/>;
+            return (
+              <GameListItemInProgress
+                animal={animal}
+                endTime={endTime}
+                winnings={winnings}
+              />
+            );
           } else
             return (
               <GameListItem
@@ -28,14 +33,12 @@ export const GamesList = ({ gamesHistory }) => {
 
 const GameListItemInProgress = ({ animal, winnings }) => {
   return (
-    <li style={{color: "rgb(2, 202, 10)"}}>
+    <li style={{ color: "rgb(2, 202, 10)" }}>
       <div>
-        <strong>
-          Game is in progress! --->
-        </strong>
+        <strong>Game is in progress! ---></strong>
       </div>
       <div>Animal: {animal}</div>
-      <div>Current winnings: {(winnings.total / (10**24)).toFixed(1)} Ⓝ</div>
+      <div>Current winnings: {(winnings.total / 10 ** 24).toFixed(1)} Ⓝ</div>
     </li>
   );
 };
@@ -50,7 +53,7 @@ const GameListItem = ({ animal, winner, winnings, guess, endTime }) => {
       <div>Animal: {animal}</div>
       <div>Winning guess: {guess ? `${guess} kg` : "No guesses"}</div>
       <div>Winner: {winner || "No winner"}</div>
-      <div>Winnings: {(winnings / (10**24)).toFixed(1)} Ⓝ</div>
+      <div>Winnings: {(winnings / 10 ** 24).toFixed(1)} Ⓝ</div>
     </li>
   );
 };

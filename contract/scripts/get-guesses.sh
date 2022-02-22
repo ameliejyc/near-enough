@@ -5,6 +5,6 @@ echo "Call getGuesses function on the contract"
 echo ---------------------------------------------------------
 echo
 
-near view $CONTRACT getWinnings --accountId $CONTRACT
+near view $CONTRACT getGuesses --accountId $CONTRACT
 
 exit 0

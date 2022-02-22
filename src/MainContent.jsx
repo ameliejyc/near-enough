@@ -71,10 +71,8 @@ export const MainContent = ({ currentGame }) => {
                 style={{ fontSize: "medium", marginBottom: "20px" }}
                 title="Each transaction costs 0.1 NEAR Tokens"
               >
-                Each guess requires a 0.1 Ⓝ deposit.
-                {wallet.isSignedIn && (
-                  <span> You are logged in as {accountId}.</span>
-                )}
+                Each guess requires a 0.1 Ⓝ deposit. You are logged in as{" "}
+                {accountId}.
               </span>
             </>
           )}
