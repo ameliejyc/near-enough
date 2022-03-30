@@ -51623,8 +51623,6 @@ exports.GamesList = void 0;
 
 var _react = _interopRequireDefault(require("react"));
 
-var _big = _interopRequireDefault(require("big.js"));
-
 require("./global.css");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -51683,7 +51681,7 @@ const GameListItem = _ref4 => {
   } = _ref4;
   return /*#__PURE__*/_react.default.createElement("li", null, /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement("strong", null, "Ended: ", new Date(Number(endTime)).toLocaleString())), /*#__PURE__*/_react.default.createElement("br", null), /*#__PURE__*/_react.default.createElement("div", null, "Animal: ", animal), /*#__PURE__*/_react.default.createElement("div", null, "Winning guess: ", guess ? `${guess} kg` : "No guesses"), /*#__PURE__*/_react.default.createElement("div", null, "Winner: ", winner || "No winner"), /*#__PURE__*/_react.default.createElement("div", null, "Winnings: ", (winnings / 10 ** 24).toFixed(1), " \u24C3"));
 };
-},{"react":"../node_modules/react/index.js","big.js":"../node_modules/big.js/big.js","./global.css":"global.css"}],"Animal.jsx":[function(require,module,exports) {
+},{"react":"../node_modules/react/index.js","./global.css":"global.css"}],"Animal.jsx":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -51806,7 +51804,7 @@ const MainContent = _ref => {
       marginBottom: "20px"
     },
     title: "Each transaction costs 0.1 NEAR Tokens"
-  }, "Each guess requires a 0.1 \u24C3 deposit.You are logged in as", " ", _near.accountId, ".")))));
+  }, "Each guess requires a 0.1 \u24C3 deposit. You are logged in as", " ", _near.accountId, ".")))));
 };
 
 exports.MainContent = MainContent;
@@ -51856,7 +51854,7 @@ const OwnerActions = () => {
     setIsStarting(true);
 
     try {
-      await (0, _near.startGame)(index);
+      await (0, _near.startGame)(parseInt(index));
     } catch (error) {
       console.log(error);
     }
@@ -52060,7 +52058,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "49784" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "51451" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
