@@ -18,6 +18,7 @@ export const GameInfo = () => {
         first one wins). To play, each player donates 0.1 NEAR. The winner
         receives all the money in the pot.
       </p>
+      <p>Check out the code <a href="https://github.com/ameliejyc/near-enough">here</a>.</p>
     </main>
   );
 };
