@@ -26,20 +26,6 @@ export default function App() {
   // after submitting the form, we want to show Notification
   const [showNotification, setShowNotification] = React.useState(false);
 
-  const startGame = async () => {
-    try {
-      startGame();
-      console.log("success");
-    } catch (e) {
-      alert(
-        "Something went wrong! " +
-          "Maybe you need to sign out and back in? " +
-          "Check your browser console for more info."
-      );
-      throw e;
-    }
-  };
-
   React.useEffect(() => {
     const getHistory = async () => {
       try {
